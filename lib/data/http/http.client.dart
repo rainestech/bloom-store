@@ -170,5 +170,13 @@ class HttpClient {
     await _secureStorage.delete(key: 'name');
     await _secureStorage.delete(key: 'email');
     await _secureStorage.delete(key: 'isAdmin');
+
+    _token = null;
+    _username = null;
+    _password = null;
+    _passport = null;
+    _email = null;
+    _name = null;
+    _isAdmin = false;
   }
 }

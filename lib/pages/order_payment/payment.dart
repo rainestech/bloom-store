@@ -202,7 +202,7 @@ class _PaymentPageState extends State<PaymentPage> {
       showAlertDialog(
           context,
           "Payment Success",
-          "Thanks for Shopping with us, your order will be on their way to you sonn!",
+          "Thanks for Shopping with us, your order will be on its way to you soon!",
           true);
       return;
     }

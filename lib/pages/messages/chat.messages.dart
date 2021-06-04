@@ -129,7 +129,7 @@ class _MessageScreenState extends State<MessageScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(22.5),
                               image: DecorationImage(
-                                image: widget.name == 'Bloom Admin' ? AssetImage('assets/bloom.png') : NetworkImage(widget.imagePath),
+                                image: widget.name == 'Bloom Admin' ? AssetImage('assets/bloom.png') : widget.imagePath != null ? NetworkImage(widget.imagePath) : AssetImage('assets/user_profile/blank.png'),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -294,7 +294,7 @@ class _MessageScreenState extends State<MessageScreen> {
       'avatar': widget.user.avatar,
     };
 
-    if (widget.to.contains('admin@bloomstore.com')) {
+    if (widget.to.contains('admin@bloomstore.com') && widget.user.isAdmin) {
       from['email'] = 'admin@bloomstore.com';
     }
 

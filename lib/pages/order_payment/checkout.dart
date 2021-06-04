@@ -13,6 +13,7 @@ import 'package:bloom/pages/order_payment/widgets/address.card.dart';
 import 'package:bloom/pages/order_payment/widgets/price.card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../home.dart';
@@ -302,10 +303,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   void _createOrder() async {
+    var address = (widget.person.addresses != null && widget.person.addresses.length > 0) ? widget.person.addresses.firstWhere((e) => e.type == 'shipping') : null;
+
     if (_cart.isEmpty) {
       return;
     }
-    var address = (widget.person.addresses != null && widget.person.addresses.length > 0) ? widget.person.addresses.firstWhere((e) => e.type == 'shipping') : null;
+
+    if (address == null) {
+      Fluttertoast.showToast(msg: 'Add Shipping Address first!');
+      return;
+    }
+
     EasyLoading.show(status: 'Creating your Order....');
     try {
       var order = Orders.cartToOrder(_cart, address);

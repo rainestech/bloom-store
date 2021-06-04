@@ -88,7 +88,7 @@ class UserApiProvider {
 
       return resp;
     } catch (e) {
-      debugPrint(e.toString());
+      // debugPrint(e.toString());
       if (e.response != null) {
         Map<String, dynamic> error = json.decode(e.response.toString());
         return UserResponse.withError(error['message'], error['error']);

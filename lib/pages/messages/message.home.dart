@@ -145,6 +145,8 @@ class _MessageHomeState extends State<MessageHome>  with WidgetsBindingObserver 
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
+    print(contact.toString());
+
     return InkWell(
         onTap: () {
           List<String> to = [];
@@ -189,7 +191,7 @@ class _MessageHomeState extends State<MessageHome>  with WidgetsBindingObserver 
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30.0),
                             image: DecorationImage(
-                              image: contact['from']['name'] == 'Bloom Admin' ? AssetImage('assets/bloom.png') : NetworkImage(contact['from']['avatar']),
+                              image: contact['from']['name'] == 'Bloom Admin' ? AssetImage('assets/bloom.png') : contact['from']['avatar'] != null ? NetworkImage(contact['from']['avatar']) : AssetImage('assets/user_profile/blank.png'),
                               fit: BoxFit.cover,
                             ),
                           ),
