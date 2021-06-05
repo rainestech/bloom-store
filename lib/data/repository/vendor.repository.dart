@@ -30,6 +30,46 @@ class CategoryRepository {
   }
 
 }
+class AdsRepository {
+  AdsApiProvider _apiProvider = AdsApiProvider();
+
+  Future<AdsListResponse> getAds() async {
+    AdsListResponse response = await _apiProvider.index();
+
+    return response;
+  }
+
+  Future<AdsListResponse> myAds() async {
+    AdsListResponse response = await _apiProvider.myAds();
+
+    return response;
+  }
+
+  Future<AdsListResponse> vendorAds(Vendor vendor) async {
+    AdsListResponse response = await _apiProvider.vendorAds(vendor);
+
+    return response;
+  }
+
+  Future<AdsResponse> save(Ads ads) async {
+    AdsResponse response = await _apiProvider.saveAds(ads);
+
+    return response;
+  }
+
+  Future<AdsResponse> edit(Ads ads) async {
+    AdsResponse response = await _apiProvider.editAds(ads);
+
+    return response;
+  }
+
+  Future<AdsResponse> delete(Ads ads) async {
+    AdsResponse response = await _apiProvider.deleteAd(ads);
+
+    return response;
+  }
+
+}
 
 class AddressRepository {
   AddressApiProvider _apiProvider = AddressApiProvider();

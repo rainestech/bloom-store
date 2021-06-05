@@ -128,6 +128,46 @@ class Category {
   @override
   int get hashCode => super.hashCode;
 }
+class Ads {
+  int id;
+  Products product;
+  Category category;
+  Passport image;
+  Vendor vendor;
+
+  Ads(
+      {this.id,
+        this.product,
+        this.category,
+        this.image});
+
+  Ads.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    image = json['image'] != null ? new Passport.fromJson(json['image']) : null;
+    category = json['category'] != null ? new Category.fromJson(json['category']) : null;
+    product = json['activeProduct'] != null ? new Products.fromJson(json['activeProduct']) : json['product'] != null ? new Products.fromJson(json['product']) : null;
+    vendor = json['vendor'] != null ? new Vendor.fromJson(json['vendor']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['product'] = this.product != null ? product.toJson() : null;
+    data['product_id'] = this.product != null ? product.id : null;
+    data['image'] = this.image != null ? image.toJson() : null;
+    data['category'] = this.category != null ? category.toJson() : null;
+    data['category_id'] = this.category != null ? category.id : null;
+    data['vendor'] = this.vendor != null ? vendor.toJson() : null;
+    data['vendor_id'] = this.vendor != null ? vendor.id : null;
+    return data;
+  }
+
+  bool operator == (dynamic other) =>
+      other != null && other is Ads && this.id == other.id;
+
+  @override
+  int get hashCode => super.hashCode;
+}
 
 class Cart {
   int id;

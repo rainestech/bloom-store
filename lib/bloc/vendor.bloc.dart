@@ -11,6 +11,7 @@ class VendorBloc {
   final AddressRepository _addressRepository = AddressRepository();
   final CartRepository _cartRepository = CartRepository();
   final OrderRepository _orderRepository = OrderRepository();
+  final AdsRepository _adsRepository = AdsRepository();
 
   final BehaviorSubject<ProductsResponse> _productSubject =
       BehaviorSubject<ProductsResponse>();
@@ -23,6 +24,12 @@ class VendorBloc {
 
   final BehaviorSubject<AddressListResponse> _addressListSubject =
       BehaviorSubject<AddressListResponse>();
+
+  final BehaviorSubject<AdsResponse> _adsSubject =
+      BehaviorSubject<AdsResponse>();
+
+  final BehaviorSubject<AdsListResponse> _adsListSubject =
+      BehaviorSubject<AdsListResponse>();
 
   final BehaviorSubject<OrderResponse> _orderSubject =
       BehaviorSubject<OrderResponse>();
@@ -131,6 +138,55 @@ class VendorBloc {
   Future<CategoryListResponse> getCategories() async {
     CategoryListResponse response = await _categoryRepository.getCategories();
     _categoryListSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<AdsResponse> saveAds(Ads ads) async {
+    AdsResponse response = await _adsRepository.save(ads);
+    _adsSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<AdsResponse> editAds(Ads ads) async {
+    AdsResponse response = await _adsRepository.edit(ads);
+    _adsSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<AdsResponse> deleteAd(Ads ad) async {
+    AdsResponse response = await _adsRepository.delete(ad);
+    _adsSubject.drain(null);
+
+    if (_adsListSubject.hasValue) {
+      List<Ads> ads = _adsListSubject.value.data;
+      if (ads != null) {
+        _adsListSubject.sink.add(new AdsListResponse(ads.where((e) => e.id != ad.id).toList(), "", ""));
+      }
+    }
+
+    return response;
+  }
+
+  Future<AdsListResponse> getAds() async {
+    AdsListResponse response = await _adsRepository.getAds();
+    _adsListSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<AdsListResponse> myAds() async {
+    AdsListResponse response = await _adsRepository.myAds();
+    _adsListSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<AdsListResponse> vendorAds(Vendor vendor) async {
+    AdsListResponse response = await _adsRepository.vendorAds(vendor);
+    _adsListSubject.sink.add(response);
 
     return response;
   }
@@ -283,6 +339,8 @@ class VendorBloc {
     _orderSubject.close();
     _addressListSubject.close();
     _addressSubject.close();
+    _adsListSubject.close();
+    _adsSubject.close();
     _countriesSubject.close();
     _isDisposed = true;
   }
@@ -300,6 +358,8 @@ class VendorBloc {
     _orderSubject.isClosed ? null : _orderSubject.drain(null);
     _addressListSubject.isClosed ? null : _addressListSubject.drain(null);
     _addressSubject.isClosed ? null : _addressSubject.drain(null);
+    _adsListSubject.isClosed ? null : _adsListSubject.drain(null);
+    _adsSubject.isClosed ? null : _adsSubject.drain(null);
     _countriesSubject.isClosed ? null : _countriesSubject.drain(null);
   }
 
@@ -315,6 +375,8 @@ class VendorBloc {
   BehaviorSubject<CategoryListResponse> get categoryListSubject => _categoryListSubject;
   BehaviorSubject<AddressResponse> get addressSubject => _addressSubject;
   BehaviorSubject<AddressListResponse> get addressListSubject => _addressListSubject;
+  BehaviorSubject<AdsResponse> get adsSubject => _adsSubject;
+  BehaviorSubject<AdsListResponse> get adsListSubject => _adsListSubject;
   BehaviorSubject<CountryListResponse> get countriesSubject => _countriesSubject;
 }
 

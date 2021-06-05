@@ -117,27 +117,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Bloom',
       builder: EasyLoading.init(),
-      // builder: (context, child) {
-      //   EasyLoading.init();
-      //
-      //   EasyLoading.instance
-      //     ..indicatorType = EasyLoadingIndicatorType.foldingCube
-      //     ..loadingStyle = EasyLoadingStyle.dark
-      //     ..indicatorSize = 45.0
-      //     ..radius = 10.0
-      //     ..progressColor = AppColors.primaryColor
-      //     ..backgroundColor = AppColors.themeDark
-      //     ..indicatorColor = AppColors.themeRed
-      //     ..textColor = AppColors.primaryColor
-      //     ..maskColor = AppColors.secondaryColor.withOpacity(0.5)
-      //     ..userInteractions = true
-      //     ..dismissOnTap = false;
-      //
-      //   return ScrollConfiguration(
-      //     behavior: MyBehavior(),
-      //     child: child,
-      //   );
-      // },
+
       theme: LightTheme.lightThemeData,
       home: MyHomePage(),
       debugShowCheckedModeBanner: false,

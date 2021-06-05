@@ -186,6 +186,24 @@ class CategoryResponse {
         eTitle = title;
 }
 
+class AdsResponse {
+  final Ads data;
+  final String error;
+  final String eTitle;
+
+  AdsResponse(this.data, this.error, this.eTitle);
+
+  AdsResponse.fromJson(resp)
+      : data = new Ads.fromJson(resp),
+        error = "",
+        eTitle = "";
+
+  AdsResponse.withError(String msg, title)
+      : data = null,
+        error = msg,
+        eTitle = title;
+}
+
 class CategoryListResponse {
   final List<Category> data;
   final String error;
@@ -199,6 +217,24 @@ class CategoryListResponse {
         eTitle = null;
 
   CategoryListResponse.withError(String msg, title)
+      : data = null,
+        error = msg,
+        eTitle = title;
+}
+
+class AdsListResponse {
+  final List<Ads> data;
+  final String error;
+  final String eTitle;
+
+  AdsListResponse(this.data, this.error, this.eTitle);
+
+  AdsListResponse.fromJson(resp)
+      : data = (resp as List).map((i) => new Ads.fromJson(i)).toList(),
+        error = null,
+        eTitle = null;
+
+  AdsListResponse.withError(String msg, title)
       : data = null,
         error = msg,
         eTitle = title;
@@ -383,6 +419,105 @@ class CategoryApiProvider {
         return CategoryResponse.withError(error['message'], error['error']);
       }
       return CategoryResponse.withError(e.message, "Network Error");
+    }
+  }
+}
+
+class AdsApiProvider {
+  Future<AdsListResponse> index() async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.get(adsEndpoint);
+
+      AdsListResponse resp = AdsListResponse.fromJson(response.data);
+
+      return resp;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return AdsListResponse.withError(error['message'], error['error']);
+      }
+      return AdsListResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<AdsListResponse> myAds() async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.get(adsEndpoint + '/my');
+
+      AdsListResponse resp = AdsListResponse.fromJson(response.data);
+
+      return resp;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return AdsListResponse.withError(error['message'], error['error']);
+      }
+      return AdsListResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<AdsListResponse> vendorAds(Vendor vendor) async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.get(adsEndpoint + '/vendor/' + vendor.id.toString());
+
+      AdsListResponse resp = AdsListResponse.fromJson(response.data);
+
+      return resp;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return AdsListResponse.withError(error['message'], error['error']);
+      }
+      return AdsListResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<AdsResponse> saveAds(Ads ads) async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.post(adsEndpoint,
+          data: ads.toJson());
+
+      return AdsResponse.fromJson(response.data);
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return AdsResponse.withError(error['message'], error['error']);
+      }
+      return AdsResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<AdsResponse> editAds(Ads ads) async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.put(adsEndpoint, data: ads.toJson());
+
+      return AdsResponse.fromJson(response.data);
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return AdsResponse.withError(error['message'], error['error']);
+      }
+      return AdsResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<AdsResponse> deleteAd(Ads ads) async {
+    final Dio _dio = await HttpClient.http();
+    try {
+      await _dio.delete(adsEndpoint + '/remove/${ads.id}');
+
+      return AdsResponse(ads, "", "");
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return AdsResponse.withError(error['message'], error['error']);
+      }
+      return AdsResponse.withError(e.message, "Network Error");
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:bloom/bloc/person.bloc.dart';
 import 'package:bloom/data/http/persons.provider.dart';
 import 'package:bloom/helpers/no.login.dart';
 import 'package:bloom/pages/messages/message.home.dart';
+import 'package:bloom/pages/vendors/products/ads.dart';
 import 'package:bloom/pages/vendors/products/products.dart';
 import 'package:bloom/pages/vendors/profile/shop.profile.dart';
 import 'package:flutter/material.dart';
@@ -120,6 +121,17 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
               ),
               InkWell(
                 onTap: () {
+                  if (activeTabNumber != 3) {
+                    changeTab(5);
+                  }
+                },
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                child: bottomBarItem(5, activeTabNumber,
+                    FontAwesomeIcons.ad, 'Ads'),
+              ),
+              InkWell(
+                onTap: () {
                   if (activeTabNumber != 4) {
                     changeTab(4);
                   }
@@ -143,6 +155,8 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
           ? ProductScreen()
           : (activeTabNumber == 4)
           ? ShopProfileScreen()
+          : (activeTabNumber == 5)
+          ? AdsScreen()
           : Dashboard(),
     );
   }

@@ -1,12 +1,19 @@
 import 'dart:io';
 
 import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/bloc/vendor.bloc.dart';
+import 'package:bloom/data/entity/vendor.entity.dart';
+import 'package:bloom/data/http/endpoints.dart';
+import 'package:bloom/pages/product/product.dart';
 import 'package:bloom/pages/search.dart';
 import 'package:bloom/widget/cart.widget.dart';
 import 'package:bloom/widget/notification.widget.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_pro/carousel_pro.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'category/top_offers_pages/get_products.dart';
 import 'home_page_component/category_grid.dart';
 import 'home_page_component/drawer.dart';
 import 'home_page_component/top_seller_grid.dart';
@@ -20,6 +27,24 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   DateTime currentBackPressTime;
+  List<Ads> _ads = [];
+  bool resp = false;
+
+  @override
+  void initState() {
+    super.initState();
+    vendorBloc.getAds();
+    vendorBloc.adsListSubject.listen((value) {
+      if (!mounted) return;
+
+      setState(() {
+        if (value.data != null) {
+          _ads = value.data;
+        }
+        resp = true;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,26 +104,41 @@ class _HomeState extends State<Home> {
             Container(
               child: SizedBox(
                 height: 170.0,
-                child: Carousel(
-                  images: [
-                    AssetImage('assets/slider/s1.jpg'),
-                    AssetImage('assets/slider/s2.jpg'),
-                    AssetImage('assets/slider/s3.jpg'),
-                    AssetImage('assets/slider/s4.jpg'),
-                    AssetImage('assets/slider/s5.jpg')
-                  ],
-                  dotSize: 4.0,
-                  dotSpacing: 15.0,
-                  dotColor: Colors.lightGreenAccent,
-                  indicatorBgPadding: 5.0,
-                  dotBgColor: Colors.purple.withOpacity(0.0),
-                  boxFit: BoxFit.fill,
-                  animationCurve: Curves.fastOutSlowIn,
-                ),
+                child: !resp ? SpinKitCircle(color: AppColors.secondaryColor,) : _ads.length > 0 ? CarouselSlider(
+                  items: _ads.map((i) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.symmetric(horizontal: 5.0),
+                            decoration: BoxDecoration(color: Colors.amber),
+                            child: GestureDetector(
+                                child: Image.network(fsDlEndpoint + i.image.link, fit: BoxFit.fill),
+                                onTap: () {
+                                  if (i.product != null) {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) => ProductPage(product: i.product,)));
+                                  } else {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) => GetProducts(category: i.category)));
+                                }
+                                }));
+                      },
+                    );
+                  }).toList(),
+                  options: CarouselOptions(
+                    autoPlay: true,
+                    autoPlayInterval: const Duration(seconds: 4),
+                    autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                  ),
+                ) : Center(
+                  child: Text(
+                    'No Ads Posted Yet'
+                  )
+                )
               ),
             ),
-
-            // Slider Code End Here
 
             SizedBox(
               height: 5.0,
@@ -175,5 +215,14 @@ class _HomeState extends State<Home> {
     } else {
       return true;
     }
+  }
+
+  _getImageList() {
+    var list = [];
+    for(Ads ad in _ads) {
+      list.add(NetworkImage(fsDlEndpoint + ad.image.link));
+    }
+
+    return list;
   }
 }

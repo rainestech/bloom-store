@@ -19,6 +19,7 @@ String storageEndpoint = "$_endpoint/api/v1/fs";
 String personEndpoint = "$_appEndpoint/person";
 String vendorEndpoint = "$_appEndpoint/vendor";
 String categoryEndpoint = "$_appEndpoint/category";
+String adsEndpoint = "$_appEndpoint/ads";
 String addressEndpoint = "$_appEndpoint/address";
 String productsEndpoint = "$_appEndpoint/products";
 String cartEndpoint = "$_appEndpoint/cart";
