@@ -25,10 +25,17 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home>  with WidgetsBindingObserver {
   DateTime currentBackPressTime;
   List<Ads> _ads = [];
   bool resp = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      vendorBloc.getAds();
+    }
+  }
 
   @override
   void initState() {
@@ -131,6 +138,7 @@ class _HomeState extends State<Home> {
                     autoPlayInterval: const Duration(seconds: 4),
                     autoPlayAnimationDuration: const Duration(milliseconds: 800),
                     autoPlayCurve: Curves.fastOutSlowIn,
+                    viewportFraction: 1,
                   ),
                 ) : Center(
                   child: Text(

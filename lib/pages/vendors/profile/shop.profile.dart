@@ -21,6 +21,9 @@ import '../../auth/login.dart';
 import 'edit.vendor.dart';
 
 class ShopProfileScreen extends StatefulWidget {
+  final Vendor vendor;
+
+  const ShopProfileScreen({Key key, this.vendor}) : super(key: key);
   @override
   _ShopProfileScreenState createState() => _ShopProfileScreenState();
 }
@@ -46,18 +49,24 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> with WidgetsBindi
       }
     });
 
-    vendorBloc.vendorSubject.listen((value) {
-      if (!mounted) {
-        return;
-      }
+    if (widget.vendor == null) {
+      vendorBloc.vendorSubject.listen((value) {
+        if (!mounted) {
+          return;
+        }
 
-      setState(() {
-        _vendor = value.data;
+        setState(() {
+          _vendor = value.data;
+        });
       });
-    });
+      vendorBloc.myShop();
+    } else {
+      setState(() {
+        _vendor = widget.vendor;
+      });
+    }
 
     userBloc.getUser();
-    vendorBloc.myShop();
   }
 
   @override
@@ -159,7 +168,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> with WidgetsBindi
                     ),
                 ),
 
-                if (_vendor != null)
+                if (_vendor != null && widget.vendor == null)
                   Positioned(
                     bottom: 10.0,
                     width: width,

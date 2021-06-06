@@ -6,6 +6,7 @@ import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/pages/admin/admin.container.dart';
 import 'package:bloom/pages/category/top_offers_pages/get_products.dart';
+import 'package:bloom/pages/container.dart';
 import 'package:bloom/pages/messages/message.home.dart';
 import 'package:bloom/pages/profile/my_account.dart';
 import 'package:bloom/pages/vendors/vendors.container.dart';
@@ -119,7 +120,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     context,
                     MaterialPageRoute(
                     builder: (context) =>
-                    Home()));
+                    ScreenContainer(3)));
               },
               child: Container(
                 height: 200.0,
@@ -194,7 +195,7 @@ class _MainDrawerState extends State<MainDrawer> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Home()),
+                  MaterialPageRoute(builder: (context) => ScreenContainer(3)),
                 );
               },
             ),

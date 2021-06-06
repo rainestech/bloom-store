@@ -93,7 +93,7 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
                     changeTab(1);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(1, activeTabNumber, Icons.home, 'Dashboard'),
               ),
@@ -103,7 +103,7 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
                     changeTab(2);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(
                     2, activeTabNumber, FontAwesomeIcons.comments, 'Messages'),
@@ -114,7 +114,7 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
                     changeTab(3);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(3, activeTabNumber,
                     Icons.list_alt, 'Products'),
@@ -125,7 +125,7 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
                     changeTab(5);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(5, activeTabNumber,
                     FontAwesomeIcons.ad, 'Ads'),
@@ -136,7 +136,7 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
                     changeTab(4);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(
                     4, activeTabNumber, Icons.shopping_bag, 'Shop Profile'),

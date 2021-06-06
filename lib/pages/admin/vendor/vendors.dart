@@ -1,13 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bloom/AppTheme/theme.dart';
-import 'package:bloom/bloc/user.bloc.dart';
 import 'package:bloom/bloc/vendor.bloc.dart';
-import 'package:bloom/data/entity/admin.entity.dart';
 import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/data/http/vendor.provider.dart';
 import 'package:bloom/helpers/helper.dart';
-import 'package:bloom/pages/product/product.dart';
+import 'package:bloom/pages/vendors/products/products.dart';
+import 'package:bloom/pages/vendors/profile/shop.profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -15,35 +14,16 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'edit.product.dart';
-
-class ProductScreen extends StatefulWidget {
-  final Vendor vendor;
-
-  const ProductScreen({Key key, this.vendor}) : super(key: key);
+class AdminVendorScreen extends StatefulWidget {
   @override
-  _ProductScreenState createState() => _ProductScreenState();
+  _AdminVendorScreenState createState() => _AdminVendorScreenState();
 }
 
-class _ProductScreenState extends State<ProductScreen> {
-  User _user;
+class _AdminVendorScreenState extends State<AdminVendorScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.vendor != null) {
-      vendorBloc.getShopProductsAdmin(widget.vendor);
-    } else {
-      vendorBloc.getMyProducts();
-    }
-
-    userBloc.getUser();
-    userBloc.userSubject.listen((value) {
-      if (!mounted) return;
-
-      setState(() {
-        _user = value.data;
-      });
-    });
+    vendorBloc.getVendors();
   }
 
   @override
@@ -51,27 +31,11 @@ class _ProductScreenState extends State<ProductScreen> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
-    getProductTile(Products product) {
+    getVendorTile(Vendor vendor) {
       return Slidable(
           actionPane: SlidableDrawerActionPane(),
           actionExtentRatio: 0.25,
           secondaryActions: <Widget>[
-            if (widget.vendor == null)
-              Container(
-              margin: EdgeInsets.only(
-                top: 5.0,
-                bottom: 5.0,
-              ),
-              child: IconSlideAction(
-                caption: 'Delete',
-                color: Colors.red,
-                icon: Icons.delete,
-                onTap: () {
-                  _delete(product);
-                },
-              ),
-            ),
-            if (widget.vendor != null)
             Container(
               margin: EdgeInsets.only(
                 top: 5.0,
@@ -80,32 +44,15 @@ class _ProductScreenState extends State<ProductScreen> {
               child: IconSlideAction(
                 caption: 'Disapprove',
                 color: Colors.red,
-                icon: Icons.remove,
+                icon: Icons.cancel_outlined,
                 onTap: () {
-                  delist(product);
+                  _delete(vendor);
                 },
               ),
             ),
           ],
           actions: <Widget>[
-            if (widget.vendor == null)
-              Container(
-              margin: EdgeInsets.only(
-                top: 5.0,
-                bottom: 5.0,
-              ),
-              child: IconSlideAction(
-                caption: 'Edit',
-                color: Colors.orange,
-                icon: Icons.edit,
-                onTap: () {
-                  return Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => AddEditProductPage(product: product,)));
-                },
-              ),
-            ),
-            if (widget.vendor != null)
-              Container(
+            Container(
               margin: EdgeInsets.only(
                 top: 5.0,
                 bottom: 5.0,
@@ -115,7 +62,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 color: Colors.orange,
                 icon: Icons.check,
                 onTap: () {
-                  approve(product);
+                  _approve(vendor);
                 },
               ),
             ),
@@ -123,7 +70,7 @@ class _ProductScreenState extends State<ProductScreen> {
           child: InkWell(
             onTap: () => {
               Navigator.push(context,
-              MaterialPageRoute(builder: (context) => ProductPage(product: product,)))
+              MaterialPageRoute(builder: (context) => ShopProfileScreen(vendor: vendor,)))
             },
             child: Container(
               padding: EdgeInsets.all(5.0),
@@ -145,10 +92,10 @@ class _ProductScreenState extends State<ProductScreen> {
                 children: <Widget>[
                   Container(
                     width: 80.0,
-                    height: 80.0,
+                    height: 100.0,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: NetworkImage(fsDlEndpoint + product.images[0].link),
+                        image: NetworkImage(fsDlEndpoint + vendor.logo.link),
                         fit: BoxFit.cover,
                       ),
                       borderRadius: BorderRadius.circular(20.0),
@@ -163,7 +110,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           padding: const EdgeInsets.only(
                               top: 8.0, bottom: 4.0, right: 8.0, left: 8.0),
                           child: AutoSizeText(
-                            product.name,
+                            vendor.name,
                             maxLines: 2,
                             style: TextStyle(
                               color: AppColors.themeDark,
@@ -176,26 +123,62 @@ class _ProductScreenState extends State<ProductScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              top: 4.0, bottom: 8.0, right: 8.0, left: 8.0),
+                              top: 8.0, bottom: 4.0, right: 8.0, left: 8.0),
+                          child: AutoSizeText(
+                            vendor.approved ? 'Approved' : 'Not Approved',
+                            maxLines: 1,
+                            style: TextStyle(
+                              color: vendor.approved ? Colors.green : AppColors.themeRed,
+                              fontSize: 16.0,
+
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.7,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 0.0, right: 8.0, left: 8.0, bottom: 8.0),
                           child: Row(
                             children: [
-                              AutoSizeText(
-                                product.category.name,
-                                maxLines: 1,
+                              Text(
+                                'Products: ',
                                 style: TextStyle(
-                                  color: AppColors.themeRed,
-                                  fontSize: 16.0,
+                                  fontSize: 12.0,
 
-                                  fontWeight: FontWeight.w500,
+                                  fontWeight: FontWeight.w700,
                                   letterSpacing: 0.7,
+                                  color: AppColors.themeDark,
+                                ),
+                              ),
+                              Text(
+                                vendor.productCount.toString(),
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.7,
+                                  color: Colors.green,
                                 ),
                               ),
                               Spacer(),
-                              if(widget.vendor != null)
-                              Icon(
-                                product.approved ? Icons.check : Icons.cancel_outlined,
-                                color: product.approved ? Colors.green : AppColors.themeRed,
-                                size: 24,
+                              Text(
+                                'Approved Products: ',
+                                style: TextStyle(
+                                  fontSize: 12.0,
+
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.7,
+                                  color: AppColors.themeDark,
+                                ),
+                              ),
+                              Text(
+                                vendor.approvedProduct == null ? '0' : vendor.approvedProduct.toString(),
+                                style: TextStyle(
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.7,
+                                  color: Colors.green,
+                                ),
                               ),
                             ],
                           ),
@@ -206,7 +189,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           child: Row(
                             children: [
                               Text(
-                                'Stock: ',
+                                'Wallet Balance: ',
                                 style: TextStyle(
                                   fontSize: 12.0,
 
@@ -216,7 +199,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                 ),
                               ),
                               Text(
-                                product.stock.toString(),
+                                '\$' + numberFormat.format(vendor.walletBalance),
                                 style: TextStyle(
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w700,
@@ -225,25 +208,30 @@ class _ProductScreenState extends State<ProductScreen> {
                                 ),
                               ),
                               Spacer(),
-                              Text(
-                                'Unit Sold: ',
-                                style: TextStyle(
-                                  fontSize: 12.0,
-
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.7,
-                                  color: AppColors.themeDark,
+                              InkWell(
+                                child: Container(
+                                  width: width/4 - 20,
+                                  alignment: Alignment.center,
+                                  padding: EdgeInsets.all(5.0),
+                                  decoration: BoxDecoration(
+                                      color: Colors.amber,
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      border: Border.all(color: AppColors.themeRed, style: BorderStyle.solid)
+                                  ),
+                                  child: Text(
+                                    'Products',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 14.0, fontWeight: FontWeight.bold, color: AppColors.themeDark),
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                product.unitsSold == null ? '0' : product.unitsSold.toString(),
-                                style: TextStyle(
-                                  fontSize: 12.0,
-
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.7,
-                                  color: Colors.green,
-                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ProductScreen(vendor: vendor)));
+                                },
                               ),
                             ],
                           ),
@@ -258,16 +246,16 @@ class _ProductScreenState extends State<ProductScreen> {
       );
     }
 
-    Widget _listProductsWidget(List<Products> data, double width, double height) {
+    Widget _listProductsWidget(List<Vendor> data, double width, double height) {
       return ListView(
         children: [
-          for (Products item in data)
-            getProductTile(item),
+          for (Vendor item in data)
+            getVendorTile(item),
         ],
       );
     }
 
-    Widget _noProduct(double width, double height) {
+    Widget _noVendor(double width, double height) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -282,24 +270,12 @@ class _ProductScreenState extends State<ProductScreen> {
               height: 20.0,
             ),
             AutoSizeText(
-              'You have no product yet!',
+              'No Registered Vendor at the moment!',
               style: TextStyle(
                 color: AppColors.themeRed,
                 fontSize: 18.0,
 
                 fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(height: 10,),
-            Container(
-              padding: EdgeInsets.only(right: 30.0, left: 30.0),
-              child: AutoSizeText(
-                'You can begin to add products for sale by using the Plus Button on top right.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: 14.0,
-                ),
               ),
             ),
             SizedBox(height: 10,),
@@ -330,26 +306,24 @@ class _ProductScreenState extends State<ProductScreen> {
                 ),
           ),
           title: Text(
-            'My Products',
+            'Bloom Vendors',
             style: textTheme.headline1,
           ),
           titleSpacing: 0.0,
           backgroundColor: AppColors.primaryColor,
           iconTheme: IconThemeData(color: AppColors.themeDark),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.add),
-              color: AppColors.themeDark,
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AddEditProductPage(product: null,)));
-              },
-            ),
+            // IconButton(
+            //   icon: Icon(Icons.add),
+            //   color: AppColors.themeDark,
+            //   onPressed: () {
+            //   },
+            // ),
           ],
         ),
-        body: StreamBuilder<ProductListResponse>(
-            stream: vendorBloc.productListSubject.stream,
-            builder: (context, AsyncSnapshot<ProductListResponse> snapshot) {
+        body: StreamBuilder<VendorListResponse>(
+            stream: vendorBloc.vendorListSubject.stream,
+            builder: (context, AsyncSnapshot<VendorListResponse> snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.error != null &&
                     (snapshot.data.error.length > 0 || snapshot.data.eTitle.length > 0)) {
@@ -361,20 +335,12 @@ class _ProductScreenState extends State<ProductScreen> {
                 }
 
                 if (snapshot.data.data.length < 1) {
-                  return _noProduct(width, height);
+                  return _noVendor(width, height);
                 }
                 return _listProductsWidget(snapshot.data.data, width, height);
               } else {
                 return Center(
-                    child: SpinKitChasingDots(
-                      itemBuilder: (BuildContext context, int index) {
-                        return DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: index.isEven ? AppColors.primaryColor : AppColors.secondaryColor,
-                          ),
-                        );
-                      },
-                    )
+                    child: SpinKitCircle( color: AppColors.primaryColor,)
                 );
               }
             }
@@ -382,19 +348,19 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-  void _delete(Products product) {
+  void _delete(Vendor vendor) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
           title: Text(
-            "Confirm Delete",
+            "Confirm Status Change",
             style: TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Text("Are you Sure you want to delete ${product.name} product?"),
+          content: Text("Are you Sure you want to disapprove ${vendor.name}?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             TextButton(
@@ -411,14 +377,14 @@ class _ProductScreenState extends State<ProductScreen> {
 
             TextButton(
               child: Text(
-                "Delete",
+                "Disapprove",
                 style: TextStyle(
                   color: AppColors.themeRed,
                 ),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
-                deleteProduct(product);
+                revokeVendor(vendor);
               },
             ),
           ],
@@ -427,39 +393,27 @@ class _ProductScreenState extends State<ProductScreen> {
     );
   }
 
-  Future<void> deleteProduct(Products product) async {
-    EasyLoading.show(status: 'Deleting Product...');
-    var resp = await vendorBloc.deleteProduct(product);
+  Future<void> revokeVendor(Vendor vendor) async {
+    EasyLoading.show(status: 'Revoking Vendor Status...');
+    var resp = await vendorBloc.revokeVendor(vendor);
     EasyLoading.dismiss();
 
     if (resp.data != null) {
-      EasyLoading.showSuccess('Product Deleted', duration: Duration(seconds: 5));
+      vendorBloc.getVendors();
+      EasyLoading.showSuccess('Vendor Disapproved', duration: Duration(seconds: 5));
     } else {
       EasyLoading.showError('An Error Occurred, Please try again', duration: Duration(seconds: 5));
     }
   }
 
-  Future<void> delist(Products product) async {
-    EasyLoading.show(status: 'DeListing Product...');
-    var resp = await vendorBloc.delistProduct(product);
-    vendorBloc.getShopProducts(widget.vendor);
+  Future<void> _approve(Vendor vendor) async {
+    EasyLoading.show(status: 'Approving Vendor...');
+    var resp = await vendorBloc.approveVendor(vendor);
     EasyLoading.dismiss();
 
     if (resp.data != null) {
-      EasyLoading.showSuccess('Product Delisted', duration: Duration(seconds: 5));
-    } else {
-      EasyLoading.showError('An Error Occurred, Please try again', duration: Duration(seconds: 5));
-    }
-  }
-
-  Future<void> approve(Products product) async {
-    EasyLoading.show(status: 'Approving Product...');
-    var resp = await vendorBloc.approveProduct(product);
-    vendorBloc.getShopProducts(widget.vendor);
-    EasyLoading.dismiss();
-
-    if (resp.data != null) {
-      EasyLoading.showSuccess('Product Delisted', duration: Duration(seconds: 5));
+      vendorBloc.getVendors();
+      EasyLoading.showSuccess('Vendor Approved', duration: Duration(seconds: 5));
     } else {
       EasyLoading.showError('An Error Occurred, Please try again', duration: Duration(seconds: 5));
     }

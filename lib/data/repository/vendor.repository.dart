@@ -183,6 +183,18 @@ class VendorRepository {
     return response;
   }
 
+  Future<VendorResponse> approve(Vendor vendor) async {
+    VendorResponse response = await _apiProvider.approveVendor(vendor);
+
+    return response;
+  }
+
+  Future<VendorResponse> revoke(Vendor vendor) async {
+    VendorResponse response = await _apiProvider.revokeVendor(vendor);
+
+    return response;
+  }
+
   Future<VendorResponse> delete(Vendor vendor) async {
     VendorResponse response = await _apiProvider.deleteVendor(vendor);
 
@@ -201,6 +213,12 @@ class ProductRepository {
   
   Future<ProductListResponse> getShopProducts(Vendor vendor) async {
     ProductListResponse response = await _apiProvider.shopProducts(vendor);
+
+    return response;
+  }
+
+  Future<ProductListResponse> getShopProductsAdmin(Vendor vendor) async {
+    ProductListResponse response = await _apiProvider.shopProductsAdmin(vendor);
 
     return response;
   }
@@ -231,6 +249,18 @@ class ProductRepository {
 
   Future<ProductsResponse> edit(Products products) async {
     ProductsResponse response = await _apiProvider.editProduct(products);
+
+    return response;
+  }
+
+  Future<ProductsResponse> approve(Products products) async {
+    ProductsResponse response = await _apiProvider.approveProduct(products);
+
+    return response;
+  }
+
+  Future<ProductsResponse> delist(Products products) async {
+    ProductsResponse response = await _apiProvider.delistProduct(products);
 
     return response;
   }

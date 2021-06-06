@@ -1,9 +1,8 @@
-import 'dart:io';
-import 'dart:ui';
 import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/pages/admin/categories.dart';
+import 'package:bloom/pages/admin/vendor/vendors.dart';
 import 'package:bloom/pages/messages/message.home.dart';
-import 'package:bloom/pages/profile/my_account.dart';
+import 'package:bloom/pages/vendors/products/ads.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -61,7 +60,7 @@ class _AdminContainerState extends State<AdminContainer> {
                     changeTab(1);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(
                     1, activeTabNumber, FontAwesomeIcons.comments, 'Messages'),
@@ -72,7 +71,7 @@ class _AdminContainerState extends State<AdminContainer> {
                     changeTab(2);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(2, activeTabNumber,
                     Icons.list_alt, 'Categories'),
@@ -83,7 +82,7 @@ class _AdminContainerState extends State<AdminContainer> {
                     changeTab(3);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(3, activeTabNumber, Icons.home, 'Dashboard'),
               ),
@@ -93,7 +92,7 @@ class _AdminContainerState extends State<AdminContainer> {
                     changeTab(4);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
                 child: bottomBarItem(
                     4, activeTabNumber, Icons.shopping_bag, 'Vendors'),
@@ -104,9 +103,9 @@ class _AdminContainerState extends State<AdminContainer> {
                     changeTab(5);
                   }
                 },
-                splashColor: Colors.transparent,
+                splashColor: AppColors.secondaryColor,
                 highlightColor: Colors.transparent,
-                child: bottomBarItem(5, activeTabNumber, Icons.person, 'Profile'),
+                child: bottomBarItem(5, activeTabNumber, FontAwesomeIcons.ad, 'Ads'),
               ),
             ],
           ),
@@ -119,8 +118,8 @@ class _AdminContainerState extends State<AdminContainer> {
           : (activeTabNumber == 3)
           ? Dashboard()
           : (activeTabNumber == 4)
-          ? Dashboard()
-          : MyAccount(),
+          ? AdminVendorScreen()
+          : AdsScreen()
     );
   }
 

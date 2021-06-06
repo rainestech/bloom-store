@@ -86,6 +86,20 @@ class VendorBloc {
     return response;
   }
 
+  Future<VendorResponse> approveVendor(Vendor vendor) async {
+    VendorResponse response = await _vendorRepository.approve(vendor);
+    _vendorSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<VendorResponse> revokeVendor(Vendor vendor) async {
+    VendorResponse response = await _vendorRepository.revoke(vendor);
+    _vendorSubject.sink.add(response);
+
+    return response;
+  }
+
   Future<VendorResponse> deleteVendor(Vendor vendor) async {
     VendorResponse response = await _vendorRepository.delete(vendor);
     _vendorSubject.drain(null);
@@ -205,6 +219,20 @@ class VendorBloc {
     return response;
   }
 
+  Future<ProductsResponse> delistProduct(Products product) async {
+    ProductsResponse response = await _productRepository.delist(product);
+    _productSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<ProductsResponse> approveProduct(Products product) async {
+    ProductsResponse response = await _productRepository.approve(product);
+    _productSubject.sink.add(response);
+
+    return response;
+  }
+
   Future<ProductsResponse> deleteProduct(Products product) async {
     ProductsResponse response = await _productRepository.delete(product);
     _productSubject.drain(null);
@@ -235,6 +263,13 @@ class VendorBloc {
 
   Future<ProductListResponse> getShopProducts(Vendor vendor) async {
     ProductListResponse response = await _productRepository.getShopProducts(vendor);
+    _productListSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<ProductListResponse> getShopProductsAdmin(Vendor vendor) async {
+    ProductListResponse response = await _productRepository.getShopProductsAdmin(vendor);
     _productListSubject.sink.add(response);
 
     return response;
@@ -378,6 +413,7 @@ class VendorBloc {
   BehaviorSubject<AdsResponse> get adsSubject => _adsSubject;
   BehaviorSubject<AdsListResponse> get adsListSubject => _adsListSubject;
   BehaviorSubject<CountryListResponse> get countriesSubject => _countriesSubject;
+
 }
 
 final vendorBloc = VendorBloc();

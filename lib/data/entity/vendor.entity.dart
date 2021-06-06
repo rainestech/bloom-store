@@ -12,6 +12,11 @@ class Vendor {
   String facebook;
   String twitter;
   String instagram;
+  double walletBalance;
+  bool approved;
+  int approvedProduct;
+  int productCount;
+
 
   Vendor(
       {this.id,
@@ -30,8 +35,12 @@ class Vendor {
     name = json['name'];
     slug = json['slug'];
     facebook = json['facebook'];
+    approvedProduct = int.parse(json['approved_product'] != null ? json['approved_product'].toString() : '0');
+    walletBalance = double.parse(json['wallet_balance'] != null ? json['wallet_balance'].toString() : '0');
+    productCount = int.parse(json['product_count'] != null ? json['product_count'].toString() : '0');
     instagram = json['instagram'];
     twitter = json['twitter'];
+    approved = json['approved'];
     description = json['description'];
     if (json['person'] != null) {
       person = <Person>[];
@@ -375,7 +384,7 @@ class Products {
   int quantity;
   double salePrice;
   String saleEnds;
-  int approved;
+  bool approved;
 
   Products(
       {this.id,
