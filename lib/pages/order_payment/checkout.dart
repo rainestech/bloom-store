@@ -294,9 +294,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   String _getTotal() {
     if (_cart.length > 0) {
-      double price = _cart.fold(0.0, (sum, item) => sum + item.price);
+      double price = _cart.fold(0.0, (sum, item) => sum + (item.price * item.quantity));
       double shipping = _cart.fold(0.0, (sum, item) => sum + item.shipping);
-      return (price + shipping).toString();
+      return numberFormat.format(price + shipping);
     }
 
     return '0';

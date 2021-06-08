@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/bloc/person.bloc.dart';
 import 'package:bloom/bloc/user.bloc.dart';
 import 'package:bloom/bloc/vendor.bloc.dart';
 import 'package:bloom/data/entity/admin.entity.dart';
+import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/helpers/no.login.dart';
@@ -31,11 +33,13 @@ class ShopProfileScreen extends StatefulWidget {
 class _ShopProfileScreenState extends State<ShopProfileScreen> with WidgetsBindingObserver {
   DateTime currentBackPressTime;
   User _user = new User();
+  Person _person = new Person();
   Vendor _vendor;
 
   @override
   void initState() {
     super.initState();
+    personBloc.me();
 
     userBloc.userSubject.listen((value) {
       if (!mounted) {
@@ -47,6 +51,16 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> with WidgetsBindi
           _user = value.data;
         });
       }
+    });
+
+    personBloc.personResponse.listen((value) {
+      if(!mounted) {
+        return;
+      }
+
+      setState(() {
+        _person = value.data;
+      });
     });
 
     if (widget.vendor == null) {
@@ -118,7 +132,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> with WidgetsBindi
         drawer: MainDrawer(),
 
         // Drawer Code End Here
-        body: _user.id == null ? Center(
+        body: (_user.id == null) ? Center(
           child: SpinKitChasingDots(
             itemBuilder: (BuildContext context, int index) {
               return DecoratedBox(
@@ -128,7 +142,7 @@ class _ShopProfileScreenState extends State<ShopProfileScreen> with WidgetsBindi
               );
             },
           ),
-        ) : _user == null ? NoLoginWidget() : !_user.isVendor ? VendorIntro() :
+        ) : _user == null ? NoLoginWidget() : !_user.isVendor ? VendorIntro() : _person.id == null ? NoProfileWidget() :
         ListView(
         shrinkWrap: true,
         children: <Widget>[

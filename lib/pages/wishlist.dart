@@ -122,11 +122,11 @@ class _WishlistPageState extends State<WishlistPage> {
                                         MaterialPageRoute(builder: (context) => ProductPage(product: item.product)));
                                   },
                                   child: Container(
-                                    width: 120.0,
-                                    height: 160.0,
+                                    width: 100.0,
+                                    height: 140.0,
                                     child: Image(
-                                      image: AssetImage(fsDlEndpoint + item.product.images[0].link),
-                                      fit: BoxFit.fitHeight,
+                                      image: NetworkImage(fsDlEndpoint + item.product.images[0].link),
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),

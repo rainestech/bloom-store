@@ -6,11 +6,14 @@ import 'package:bloom/bloc/vendor.bloc.dart';
 import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
+import 'package:bloom/helpers/helper.dart';
 import 'package:bloom/pages/order_payment/checkout.dart';
 import 'package:bloom/pages/product/product.cart.dart';
 import 'package:bloom/pages/product/product.dart';
+import 'package:bloom/pages/profile/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../home.dart';
@@ -23,6 +26,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   List<Cart> _cart = [];
   Person _me;
+  bool _resp = false;
 
   @override
   void initState() {
@@ -47,6 +51,7 @@ class _CartPageState extends State<CartPage> {
       }
 
       setState(() {
+        _resp = true;
         if (value.data != null) {
           _me = value.data;
         }
@@ -137,10 +142,16 @@ class _CartPageState extends State<CartPage> {
               ),
               InkWell(
                 onTap: () {
-                  (_cart.length == 0)
-                      ? _showDialog()
-                      : Navigator.push(
-                          context, SlideLeftRoute(page: CheckoutPage(cart: _cart, person: _me)));
+                  if (_cart.length == 0)
+                       _showDialog();
+                   else if (_me == null && _resp) {
+                    Fluttertoast.showToast(msg: "Update your profile first", backgroundColor: Colors.black, textColor: Colors.white);
+                    Navigator.push(
+                      context, SlideLeftRoute(page: EditProfile()));
+                  } else {
+                    Navigator.push(
+                        context, SlideLeftRoute(page: CheckoutPage(cart: _cart, person: _me)));
+                  }
                 },
                 child: Container(
                   width: ((widthFull) / 2),
@@ -389,7 +400,7 @@ class _CartPageState extends State<CartPage> {
 
   String _getTotal() {
     if (_cart.length > 0) {
-      return _cart.fold(0.0, (sum, item) => sum + item.price).toString();
+      return numberFormat.format(_cart.fold(0.0, (sum, item) => sum + (item.price * item.quantity)).toString());
     }
 
     return '0';

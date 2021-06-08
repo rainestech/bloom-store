@@ -1,11 +1,14 @@
 import 'dart:ui';
 import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/bloc/person.bloc.dart';
+import 'package:bloom/bloc/user.bloc.dart';
+import 'package:bloom/data/entity/admin.entity.dart';
 import 'package:bloom/data/http/persons.provider.dart';
 import 'package:bloom/helpers/no.login.dart';
 import 'package:bloom/pages/messages/message.home.dart';
 import 'package:bloom/pages/vendors/products/ads.dart';
 import 'package:bloom/pages/vendors/products/products.dart';
+import 'package:bloom/pages/vendors/profile/intro.vendor.dart';
 import 'package:bloom/pages/vendors/profile/shop.profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -24,6 +27,7 @@ class VendorContainer extends StatefulWidget {
 
 class _VendorContainerState extends State<VendorContainer> with WidgetsBindingObserver {
   int activeTabNumber = 3;
+  User _user;
   DateTime currentBackPressTime;
   PersonResponse _personResponse;
 
@@ -37,15 +41,7 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       personBloc.me();
-      // personBloc.personResponse.listen((value) {
-      //   if(!mounted) {
-      //     return;
-      //   }
-      //
-      //   setState(() {
-      //     _personResponse = value;
-      //   });
-      // });
+      userBloc.getUser();
     }
   }
 
@@ -58,6 +54,7 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
     activeTabNumber = widget.page;
 
     personBloc.me();
+    userBloc.getUser();
     personBloc.personResponse.listen((value) {
       if(!mounted) {
         return;
@@ -66,6 +63,18 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
       setState(() {
         _personResponse = value;
       });
+    });
+
+    userBloc.userSubject.listen((value) {
+      if (!mounted) {
+        return;
+      }
+
+      if (value != null && value.data != null) {
+        setState(() {
+          _user = value.data;
+        });
+      }
     });
   }
 
@@ -121,7 +130,7 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
               ),
               InkWell(
                 onTap: () {
-                  if (activeTabNumber != 3) {
+                  if (activeTabNumber != 5) {
                     changeTab(5);
                   }
                 },
@@ -145,19 +154,19 @@ class _VendorContainerState extends State<VendorContainer> with WidgetsBindingOb
           ),
         ),
       ),
-      body: (_personResponse == null) ? Center( child: SpinKitCircle(color: AppColors.primaryColor))
+      body: (_personResponse == null || _user == null) ? Center( child: SpinKitCircle(color: AppColors.primaryColor))
           : _personResponse.data == null ? NoProfileWidget() :
       (activeTabNumber == 1)
           ? Dashboard()
           : (activeTabNumber == 2)
-          ? MessageHome()
+          ? (_user != null && !_user.isVendor) ? VendorIntro() : MessageHome()
           : (activeTabNumber == 3)
-          ? ProductScreen()
+          ? (_user != null && !_user.isVendor) ? VendorIntro() : ProductScreen()
           : (activeTabNumber == 4)
           ? ShopProfileScreen()
           : (activeTabNumber == 5)
-          ? AdsScreen()
-          : Dashboard(),
+          ? (_user != null && !_user.isVendor) ? VendorIntro() : AdsScreen()
+          : (_user != null && !_user.isVendor) ? VendorIntro() : Dashboard(),
     );
   }
 
