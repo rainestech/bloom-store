@@ -1,186 +1,137 @@
 import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/bloc/vendor.bloc.dart';
+import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class SearchPage extends StatelessWidget {
+import 'category/top_offers_pages/get_products.dart';
+
+class SearchPage extends StatefulWidget {
+  @override
+  _SearchPageState createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  List<Products> _result = [];
+  bool _searching = false;
+  bool _search = false;
+  TextEditingController _controller = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
           style: TextStyle(color: Colors.white),
+          controller: _controller,
           decoration: InputDecoration(
             hintText: 'Search for Products',
             hintStyle: TextStyle(
               fontSize: 14.0,
-              color: Colors.white,
+              color: AppColors.themeDark,
             ),
-            suffixIcon: Icon(Icons.search, color: AppColors.themeDark),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.search, color: AppColors.themeDark),
+              onPressed: () {
+                _searchTerm();
+              },
+            ),
             border: InputBorder.none,
             labelStyle: TextStyle(color: AppColors.themeDark),
           ),
         ),
         titleSpacing: 0.0,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: AppColors.primaryColor,
         iconTheme: IconThemeData(color: AppColors.themeDark),
       ),
-      body: ListView(
-        children: <Widget>[
-          SizedBox(height: 10.0),
-          InkWell(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //       builder: (context) => TopOffers(title: 'Best Laptops')),
-              // );
-            },
-            child: Image.asset('assets/slider/s5.jpg'),
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-          Container(
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding:
-                      const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 20.0),
-                  child: Text(
-                    'Popular on Bloom',
-                    style: TextStyle(
-                      fontSize: 17.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                Divider(),
-                ListTile(
-                  leading: Container(
-                    height: 56.0,
-                    width: 56.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28.0),
-                      border: Border.all(width: 0.3, color: Colors.grey),
-                      image: DecorationImage(
-                        image: AssetImage(
-                            "assets/block_bustor_deal/block_bustor_1.jpg"),
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  title: Text(
-                    'Room Essentials',
-                    style: TextStyle(
-                      fontFamily: 'Jost',
-                      letterSpacing: 0.7,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'Best Offers',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) =>
-                    //           TopOffers(title: 'Ladies Panty')),
-                    // );
-                  },
-                ),
-                Divider(),
-                ListTile(
-                  leading: Container(
-                    height: 56.0,
-                    width: 56.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28.0),
-                      border: Border.all(width: 0.3, color: Colors.grey),
-                      image: DecorationImage(
-                        image: AssetImage(
-                            "assets/best_of_fashion/best_of_fashion_4.jpg"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  title: Text(
-                    'Ladies Lingerie',
-                    style: TextStyle(
-                      fontFamily: 'Jost',
-                      letterSpacing: 0.7,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'Best Offers',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) =>
-                    //           TopOffers(title: 'Ladies Lingerie')),
-                    // );
-                  },
-                ),
-                Divider(),
-                ListTile(
-                  leading: Container(
-                    height: 56.0,
-                    width: 56.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(28.0),
-                      border: Border.all(width: 0.3, color: Colors.grey),
-                      image: DecorationImage(
-                        image: AssetImage(
-                            "assets/block_bustor_deal/block_bustor_2.jpg"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  title: Text(
-                    'Digital Accessories',
-                    style: TextStyle(
-                      fontFamily: 'Jost',
-                      letterSpacing: 0.7,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  subtitle: Text(
-                    'Best Offers',
-                    style: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) =>
-                    //           TopOffers(title: 'Ladies Inner Wear')),
-                    // );
-                  },
-                ),
-              ],
+      body: (_result.length < 1 && !_search && !_searching) ?
+        Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: 10.0,
             ),
+            Text(
+              'Search for products',
+              style: TextStyle(color: Colors.grey),
+            ),
+            SizedBox(
+              height: 10.0,
+            ),
+          ],
+        ),
+      )
+          : (_result.length < 1 && _search && !_searching) ?
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                FontAwesomeIcons.search,
+                color: Colors.grey,
+                size: 60.0,
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text(
+                'The are no products matching your search query!',
+                style: TextStyle(color: Colors.grey),
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+            ],
           ),
-        ],
+        ) : _searching ? Center(
+          child: SpinKitCircle(color: AppColors.secondaryColor),
+        ) : ListView(
+          physics: BouncingScrollPhysics(),
+          shrinkWrap: true,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(10),
+              child: Text(
+                'Results for: ' + _controller.text,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+            Container(
+                margin: EdgeInsets.only(top: 10.0),
+                child: ProductsGridView(products: _result)),
+          ],
       ),
     );
+  }
+
+  Future<void> _searchTerm() async {
+    if (_controller.text == null || _controller.text.isEmpty ) {
+      Fluttertoast.showToast(msg: "Enter search parameter");
+      return;
+    }
+
+    setState(() {
+      _searching = true;
+    });
+
+    var response = await vendorBloc.search(_controller.text);
+    if (response.data != null) {
+      setState(() {
+        _result = response.data;
+        _search = true;
+        _searching = false;
+      });
+    } else {
+      setState(() {
+        _search = true;
+        _searching = false;
+      });
+    }
   }
 }

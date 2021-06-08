@@ -224,6 +224,33 @@ class Cart {
   int get hashCode => super.hashCode;
 }
 
+class WishList {
+  int id;
+  Products product;
+
+  WishList(
+      {this.id,
+        this.product});
+
+  WishList.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    product = json['product'] != null ? new Products.fromJson(json['product']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['product'] = this.product != null ? product.toJson() : null;
+    return data;
+  }
+
+  bool operator ==(dynamic other) =>
+      other != null && other is WishList && this.id == other.id;
+
+  @override
+  int get hashCode => super.hashCode;
+}
+
 class OrderItems {
   int id;
   Products product;
@@ -412,7 +439,7 @@ class Products {
     slug = json['slug'];
     description = json['description'];
     excerpt = json['excerpt'];
-    salePrice = json['sale_price'];
+    salePrice = json['sale_price'] != null ? double.parse(json['sale_price'].toString()) : null;
     saleEnds = json['sale_ends'];
     if (json['vendor'] != null) {
       vendor = new Vendor.fromJson(json['vendor']);

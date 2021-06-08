@@ -4,6 +4,7 @@ import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
+import 'package:bloom/data/repository/vendor.repository.dart';
 import 'package:bloom/helpers/helper.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +22,15 @@ class ProductDetails extends StatefulWidget {
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
+  final WishListRepository _repository = WishListRepository();
   bool favourite = false;
   Color color = Colors.grey;
+
+  @override
+  void initState() {
+    super.initState();
+    this.queryWishList(widget.data);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,12 +83,14 @@ class _ProductDetailsState extends State<ProductDetails> {
                   setState(() {
                     if (!favourite) {
                       favourite = true;
+                      _repository.add(widget.data);
                       color = Colors.red;
 
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Added to Wishlist")));
                     } else {
                       favourite = false;
+                      _repository.remove(widget.data);
                       color = Colors.grey;
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Remove from Wishlist")));
@@ -412,6 +422,13 @@ class _ProductDetailsState extends State<ProductDetails> {
         // Similar Product Ends Here
       ],
     );
+  }
+
+  void queryWishList(Products data) async {
+    var resp = await _repository.query(data);
+    setState(() {
+      favourite = resp;
+    });
   }
 
   // Bottom Sheet for Product Description Starts Here

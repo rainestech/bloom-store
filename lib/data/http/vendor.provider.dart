@@ -60,6 +60,24 @@ class OrderListResponse {
         eTitle = title;
 }
 
+class WishListsResponse {
+  final List<WishList> data;
+  final String error;
+  final String eTitle;
+
+  WishListsResponse(this.data, this.error, this.eTitle);
+
+  WishListsResponse.fromJson(resp)
+      : data = (resp as List).map((i) => new WishList.fromJson(i)).toList(),
+        error = null,
+        eTitle = null;
+
+  WishListsResponse.withError(String msg, title)
+      : data = null,
+        error = msg,
+        eTitle = title;
+}
+
 class CartResponse {
   final Cart data;
   final String error;
@@ -453,6 +471,85 @@ class CategoryApiProvider {
   }
 }
 
+class WishListApiProvider {
+  Future<WishListsResponse> myWishList() async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.get(wishListEndpoint);
+
+      WishListsResponse resp = WishListsResponse.fromJson(response.data);
+
+      return resp;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return WishListsResponse.withError(error['message'], error['error']);
+      }
+      return WishListsResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<bool> addToWishList(Products product) async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      await _dio.get(wishListEndpoint + '/a/' + product.id.toString());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> removeWishList(Products product) async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      await _dio.get(wishListEndpoint + '/r/' + product.id.toString());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> queryWishList(Products product) async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      await _dio.get(wishListEndpoint + '/q/' + product.id.toString());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<CategoryResponse> editCategory(Category category) async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.put(categoryEndpoint, data: category.toJson());
+
+      return CategoryResponse.fromJson(response.data);
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return CategoryResponse.withError(error['message'], error['error']);
+      }
+      return CategoryResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<CategoryResponse> deleteCategory(Category category) async {
+    final Dio _dio = await HttpClient.http();
+    try {
+      await _dio.delete(categoryEndpoint + '/remove/${category.id}');
+
+      return CategoryResponse(category, "", "");
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return CategoryResponse.withError(error['message'], error['error']);
+      }
+      return CategoryResponse.withError(e.message, "Network Error");
+    }
+  }
+}
+
 class AdsApiProvider {
   Future<AdsListResponse> index() async {
     try {
@@ -691,6 +788,38 @@ class ProductsApiProvider {
     try {
       final Dio _dio = await HttpClient.http();
       Response response = await _dio.get(productsEndpoint + '/cat/' + category.id.toString());
+
+      ProductListResponse resp = ProductListResponse.fromJson(response.data);
+      return resp;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return ProductListResponse.withError(error['message'], error['error']);
+      }
+      return ProductListResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<ProductListResponse> deals() async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.get(productsEndpoint + '/deals');
+
+      ProductListResponse resp = ProductListResponse.fromJson(response.data);
+      return resp;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return ProductListResponse.withError(error['message'], error['error']);
+      }
+      return ProductListResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<ProductListResponse> search(String query) async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.post(productsEndpoint + '/search', data: {"query": query});
 
       ProductListResponse resp = ProductListResponse.fromJson(response.data);
       return resp;

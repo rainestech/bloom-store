@@ -279,10 +279,15 @@ class _DeliveryState extends State<Delivery> {
         var addresses = person.addresses.where((e) => e.type != 'shipping', ).toList();
         addresses.add(response.data);
         person.addresses = addresses;
-        Navigator.push(context,
+        if (widget.cart != null) {
+            Navigator.push(context,
             MaterialPageRoute(
-                builder: (context) =>
-                    CheckoutPage(cart: widget.cart, person: person,)));
+            builder: (context) =>
+            CheckoutPage(cart: widget.cart, person: person,)));
+        } else {
+          Navigator.of(context).pop();
+        }
+
       }
     }
     catch(e) {

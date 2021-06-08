@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/bloc/user.bloc.dart';
+import 'package:bloom/pages/category/top_offers_pages/deals.products.dart';
 import 'package:bloom/pages/messages/message.home.dart';
 import 'package:bloom/pages/profile/my_account.dart';
 import 'package:bloom/pages/vendors/vendors.container.dart';
@@ -122,7 +123,7 @@ class _ScreenContainerState extends State<ScreenContainer> {
                 : (activeTabNumber == 3)
                     ? Home()
                     : (activeTabNumber == 4)
-                        ? Home()
+                        ? DealsProducts()
                         : MyAccount(),
       ),
       onWillPop: () async {

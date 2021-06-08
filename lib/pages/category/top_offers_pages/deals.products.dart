@@ -1,60 +1,105 @@
+import 'dart:io';
+
 import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/bloc/vendor.bloc.dart';
 import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/data/http/vendor.provider.dart';
-import 'package:bloom/helpers/helper.dart';
+import 'package:bloom/pages/container.dart';
+import 'package:bloom/pages/home_page_component/drawer.dart';
 import 'package:bloom/pages/product/product.dart';
+import 'package:bloom/widget/cart.widget.dart';
+import 'package:bloom/widget/notification.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 
 // My Own Imports
 import 'package:page_transition/page_transition.dart';
 import '../../home.dart';
+import '../../search.dart';
 import 'filter_row.dart';
 
-class GetProducts extends StatefulWidget {
-  final Category category;
-
-  const GetProducts({Key key, this.category}) : super(key: key);
+class DealsProducts extends StatefulWidget {
   @override
-  _GetProductsState createState() => _GetProductsState();
+  _DealsProductsState createState() => _DealsProductsState();
 }
 
-class _GetProductsState extends State<GetProducts> {
+class _DealsProductsState extends State<DealsProducts> {
   ProductListResponse _response;
   List<Products> _data = [];
   int filterValue = 1;
+  DateTime currentBackPressTime;
 
   @override
   Widget build(BuildContext context) {
+    var textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
+        backgroundColor: const Color(0xFFF1F3F6),
         appBar: AppBar(
-        title: Text(widget.category.name + ' Products',
-        style: TextStyle(
-        color: AppColors.themeDark
-    ),),
-    titleSpacing: 0.0,
-    backgroundColor: AppColors.primaryColor,
-    iconTheme: IconThemeData(color: AppColors.themeDark),
-    ),
-    body: FutureBuilder<ProductListResponse>(
-      future: vendorBloc.getCategoryProducts(widget.category),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          print(snapshot.error);
-        }
+          leading: Builder(
+            builder: (context) =>
+                InkWell(
+                  onTap: () => Scaffold.of(context).openDrawer(),
+                  child: Container(
+                    height: 24.0,
+                    width: 24.0,
+                    margin: EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/bloom.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+          ),
+          title: Text(
+            'Deals',
+            style: textTheme.headline1,
+          ),
+          titleSpacing: 0.0,
+          backgroundColor: AppColors.primaryColor,
+          iconTheme: IconThemeData(color: AppColors.themeDark),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              color: AppColors.themeDark,
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SearchPage()));
+              },
+            ),
+            NotificationWidget(),
+            CartNotification(),
+          ],
+        ),
 
-        if (snapshot.hasData) {
-          // setState(() {
-            _response = snapshot.data;
-            _data = snapshot.data.data;
-          // });
-        }
+        // Drawer Code Start Here
 
-        return snapshot.hasData
-            ? (snapshot.data.data.length < 1) ?
+        drawer: MainDrawer(),
+
+        // Drawer Code End Here
+        body: WillPopScope(
+          child: FutureBuilder<ProductListResponse>(
+            future: vendorBloc.getDeals(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                print(snapshot.error);
+              }
+
+              if (snapshot.hasData) {
+                // setState(() {
+                _response = snapshot.data;
+                _data = snapshot.data.data;
+                // });
+              }
+
+              return snapshot.hasData
+                  ? (snapshot.data.data.length < 1) ?
               Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -69,7 +114,7 @@ class _GetProductsState extends State<GetProducts> {
                       height: 10.0,
                     ),
                     Text(
-                      'No Product added to this Category yet',
+                      'There is currently No Deals, check again later!',
                       style: TextStyle(color: Colors.grey),
                     ),
                     SizedBox(
@@ -83,38 +128,54 @@ class _GetProductsState extends State<GetProducts> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Home()),
+                          MaterialPageRoute(builder: (context) => ScreenContainer(3)),
                         );
                       },
                     )
                   ],
                 ),
               )
-              : ListView(
+                  : ListView(
                 physics: BouncingScrollPhysics(),
                 shrinkWrap: true,
                 children: <Widget>[
-                  FilterRow(
-                    onSortChanged: (value) {
-                      _filTerResult(value);
-                    },
-                  ),
-                  Divider(
-                    height: 1.0,
-                  ),
                   Container(
                       margin: EdgeInsets.only(top: 10.0),
                       child: ProductsGridView(products: _data)),
                 ],
               )
-            : Center(
-                child: SpinKitFoldingCube(
-                color: Theme.of(context).primaryColor,
-                size: 35.0,
-              ));
-      },
-    ),
+                  : Center(
+                  child: SpinKitFoldingCube(
+                    color: Theme.of(context).primaryColor,
+                    size: 35.0,
+                  ));
+            },
+          ),
+          onWillPop: () async {
+            bool backStatus = onWillPop();
+            if (backStatus) {
+              exit(0);
+            }
+            return false;
+          },
+        ),
     );
+  }
+
+  onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(
+        msg: 'Press Back Once Again to Exit.',
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+      );
+      return false;
+    } else {
+      return true;
+    }
   }
 
   void _filTerResult(int value) {
@@ -132,8 +193,6 @@ class _GetProductsState extends State<GetProducts> {
       temp.sort((a, b) => a.id.compareTo(b.id));
       temp.reversed;
     }
-
-    print(_data[0].id);
 
     setState(() {
       _data = temp;
@@ -199,7 +258,6 @@ class _ProductsGridViewState extends State<ProductsGridView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      if(products.salePrice != null && DateFormatter.dateAheadOfNow(products.saleEnds))
                         Text(
                         "\$${products.salePrice}",
                         style: TextStyle(fontSize: 16.0),
@@ -208,20 +266,10 @@ class _ProductsGridViewState extends State<ProductsGridView> {
                         textAlign: TextAlign.center,
                       ),
 
-                      if(products.salePrice == null || (products.salePrice != null &&  !DateFormatter.dateAheadOfNow(products.saleEnds)))
-                        Text(
-                        "\$${products.price}",
-                        style: TextStyle(fontSize: 16.0),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                      ),
-                      if(products.salePrice != null && DateFormatter.dateAheadOfNow(products.saleEnds))
-                        SizedBox(
+                      SizedBox(
                         width: 7.0,
                       ),
-                      if(products.salePrice != null && DateFormatter.dateAheadOfNow(products.saleEnds))
-                        Text(
+                      Text(
                         "\$${products.price}",
                         style: TextStyle(
                             fontSize: 13.0,
@@ -233,11 +281,11 @@ class _ProductsGridViewState extends State<ProductsGridView> {
                       ),
                     ],
                   ),
-                  // Text(
-                  //   products.offerText,
-                  //   style: TextStyle(
-                  //       color: const Color(0xFF67A86B), fontSize: 14.0),
-                  // ),
+                  Text(
+                    "Offer ends ${getDate(products.saleEnds)}",
+                    style: TextStyle(
+                        color: const Color(0xFF67A86B), fontSize: 14.0),
+                  ),
                 ],
               ),
             ),
@@ -254,6 +302,16 @@ class _ProductsGridViewState extends State<ProductsGridView> {
 
         },
     );
+  }
+
+  String getDate(String date) {
+    if (date == null) {
+      return "..";
+    }
+
+    DateTime tempDate =
+    new DateFormat("yyyy-MM-dd hh:mm:ss").parse(date);
+    return DateFormat("MMMM dd, yyyy").format(tempDate);
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:bloom/Animation/slide_left_rout.dart';
 import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/data/entity/vendor.entity.dart';
+import 'package:bloom/data/repository/vendor.repository.dart';
 import 'package:bloom/pages/order_payment/delivery_address.dart';
 import 'package:bloom/pages/product/product.cart.dart';
 import 'package:bloom/pages/product/product_details.dart';
@@ -54,10 +55,7 @@ class _ProductPageState extends State<ProductPage> {
         child: Container(
           color: Colors.white,
           width: width,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              InkWell(
+          child: InkWell(
                 onTap: () {
                   Navigator.push(context, SlideLeftRoute(page: ProductCartPage(product: widget.product,)));
                 },
@@ -72,23 +70,6 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                 ),
               ),
-              InkWell(
-                onTap: () {
-                  // Navigator.push(context, SlideLeftRoute(page: Delivery()));
-                },
-                child: Container(
-                  width: width / 2,
-                  height: 50.0,
-                  color: Theme.of(context).primaryColor,
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Buy Now',
-                    style: TextStyle(color: Colors.white, fontSize: 15.0),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
     );

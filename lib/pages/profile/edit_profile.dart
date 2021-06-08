@@ -483,10 +483,6 @@ class _EditProfileState extends State<EditProfile> {
     saveImage(image);
   }
 
-  void _removePic() async {
-
-  }
-
   saveImage(PickedFile file) async {
     setState(() {
       _image = File(file.path);

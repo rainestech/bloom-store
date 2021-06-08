@@ -1,8 +1,14 @@
+import 'package:bloom/Animation/slide_left_rout.dart';
 import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/bloc/person.bloc.dart';
 import 'package:bloom/bloc/user.bloc.dart';
 import 'package:bloom/data/entity/admin.entity.dart';
+import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/pages/home_page_component/drawer.dart';
+import 'package:bloom/pages/order_payment/delivery_address.dart';
+import 'package:bloom/pages/order_payment/my_orders.dart';
+import 'package:bloom/pages/wishlist.dart';
 import 'package:bloom/widget/cart.widget.dart';
 import 'package:bloom/widget/notification.widget.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +16,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../auth/login.dart';
 import '../search.dart';
@@ -24,11 +31,24 @@ class _MyAccountState extends State<MyAccount> with WidgetsBindingObserver {
   DateTime currentBackPressTime;
   User _user;
   bool _dataReturned = false;
+  Person person = Person();
+  Address _address;
 
   @override
   void initState() {
     super.initState();
     userBloc.getUser();
+    personBloc.me();
+
+    personBloc.personResponse.listen((value) {
+      if(!mounted)
+        return;
+
+      if (value.data != null) {
+        person = value.data;
+      }
+      _address = (person.addresses != null && person.addresses.length > 0) ? person.addresses.firstWhere((e) => e.type == 'shipping') : null;
+    });
 
     userBloc.userSubject.listen((value) {
       if (!mounted) {
@@ -206,8 +226,7 @@ class _MyAccountState extends State<MyAccount> with WidgetsBindingObserver {
           if (_user != null)
             InkWell(
             onTap: () {
-              _showToast();
-              // Navigator.push(context, SlideLeftRoute(page: MyOrders()));
+              Navigator.push(context, SlideLeftRoute(page: MyOrders()));
             },
             child: Container(
               padding: EdgeInsets.all(16.0),
@@ -241,8 +260,7 @@ class _MyAccountState extends State<MyAccount> with WidgetsBindingObserver {
           if (_user != null)
           InkWell(
             onTap: () {
-              _showToast();
-              // Navigator.push(context, SlideLeftRoute(page: MyOrders()));
+              Navigator.push(context, SlideLeftRoute(page: WishlistPage()));
             },
             child: Container(
               padding: EdgeInsets.all(16.0),
@@ -275,8 +293,7 @@ class _MyAccountState extends State<MyAccount> with WidgetsBindingObserver {
           ),
           InkWell(
             onTap: () {
-              _showToast();
-              // Navigator.push(context, SlideLeftRoute(page: MyOrders()));
+              Share.share('check out Bloom Store on google play https://playstore.com', subject: 'Bloom Store!');
             },
             child: Container(
               padding: EdgeInsets.all(16.0),
@@ -309,8 +326,7 @@ class _MyAccountState extends State<MyAccount> with WidgetsBindingObserver {
           if (_user != null)
             InkWell(
             onTap: () {
-              _showToast();
-              // Navigator.push(context, SlideLeftRoute(page: AccountSetting()));
+              Navigator.push(context, SlideLeftRoute(page: Delivery(cart: null, address: _address, person: person,)));
             },
             child: Container(
               padding: EdgeInsets.all(16.0),

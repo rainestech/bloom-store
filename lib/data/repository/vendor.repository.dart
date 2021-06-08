@@ -155,6 +155,34 @@ class OrderRepository {
   }
 }
 
+class WishListRepository {
+  WishListApiProvider _apiProvider = WishListApiProvider();
+
+  Future<WishListsResponse> myList() async {
+    WishListsResponse response = await _apiProvider.myWishList();
+
+    return response;
+  }
+
+  Future<bool> add(Products product) async {
+    var response = await _apiProvider.addToWishList(product);
+
+    return response;
+  }
+
+  Future<bool> remove(Products product) async {
+    var response = await _apiProvider.removeWishList(product);
+
+    return response;
+  }
+
+  Future<bool> query(Products products) async {
+    var response = await _apiProvider.queryWishList(products);
+
+    return response;
+  }
+}
+
 
 class VendorRepository {
   VendorApiProvider _apiProvider = VendorApiProvider();
@@ -202,6 +230,7 @@ class VendorRepository {
   }
 
 }
+
 class ProductRepository {
   ProductsApiProvider _apiProvider = ProductsApiProvider();
 
@@ -225,6 +254,18 @@ class ProductRepository {
 
   Future<ProductListResponse> getCategoryProducts(Category category) async {
     ProductListResponse response = await _apiProvider.categoryProducts(category);
+
+    return response;
+  }
+
+  Future<ProductListResponse> getDeals() async {
+    ProductListResponse response = await _apiProvider.deals();
+
+    return response;
+  }
+
+  Future<ProductListResponse> search(String query) async {
+    ProductListResponse response = await _apiProvider.search(query);
 
     return response;
   }

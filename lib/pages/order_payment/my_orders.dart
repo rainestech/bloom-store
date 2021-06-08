@@ -1,4 +1,13 @@
+import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/bloc/vendor.bloc.dart';
+import 'package:bloom/data/entity/vendor.entity.dart';
+import 'package:bloom/data/http/endpoints.dart';
+import 'package:bloom/data/http/vendor.provider.dart';
+import 'package:bloom/helpers/helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import '../container.dart';
 
 class MyOrders extends StatefulWidget {
   @override
@@ -6,38 +15,33 @@ class MyOrders extends StatefulWidget {
 }
 
 class _MyOrdersState extends State<MyOrders> {
-  final cartItemList = [
-    {
-      'status': 1,
-      'title': 'Orange One Piece for Women',
-      'image': 'assets/products/wedding_collection/wedding_collection_11.jpg',
-      'price': 649,
-      'size': 'L'
-    },
-    {
-      'status': 2,
-      'title': 'White One Piece for Women',
-      'image': 'assets/products/wedding_collection/wedding_collection_10.jpg',
-      'price': 299,
-      'size': 'M'
-    },
-    {
-      'status': 3,
-      'title': 'Julee Crepe Embroidered Salwar Suit Material',
-      'image': 'assets/products/wedding_collection/wedding_collection_8.jpg',
-      'price': 849,
-      'size': 'L'
-    }
-  ];
+  List<OrderItems> _orderItems = [];
+  OrderListResponse _orders;
+
+  @override
+  void initState() {
+    super.initState();
+    vendorBloc.myOrders();
+    vendorBloc.orderListSubject.listen((value) {
+      if (!mounted) {
+        return;
+      }
+
+      if (value.data != null) {
+        this.setOrders(value.data);
+      }
+
+      setState(() {
+        _orders = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    Container _checkStatus(status) {
-      // status 1 => Out for Delivery
-      // status 2 => Shipped
-      // status 3 => Delivered
 
-      if (status == 1) {
+    Container _checkStatus(status) {
+      if (status == 'paid') {
         return Container(
           padding: EdgeInsets.all(5.0),
           decoration: BoxDecoration(
@@ -45,11 +49,11 @@ class _MyOrdersState extends State<MyOrders> {
             borderRadius: BorderRadius.only(topRight: Radius.circular(5.0)),
           ),
           child: Text(
-            'Out for Delivery',
+            'Item Shipped',
             style: TextStyle(color: Colors.white, fontSize: 12.0),
           ),
         );
-      } else if (status == 2) {
+      } else if (status == 'pending') {
         return Container(
           padding: EdgeInsets.all(5.0),
           decoration: BoxDecoration(
@@ -57,7 +61,7 @@ class _MyOrdersState extends State<MyOrders> {
             borderRadius: BorderRadius.only(topRight: Radius.circular(5.0)),
           ),
           child: Text(
-            'Shipped',
+            'Pending Payment',
             style: TextStyle(color: Colors.white, fontSize: 12.0),
           ),
         );
@@ -78,136 +82,260 @@ class _MyOrdersState extends State<MyOrders> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Orders'),
+        title: Text('My Orders', style: TextStyle(
+          color: AppColors.themeDark,
+        ),),
         titleSpacing: 0.0,
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      body: ListView.builder(
-        itemCount: cartItemList.length,
-        itemBuilder: (context, index) {
-          final item = cartItemList[index];
-          return Container(
-            height: 180.0,
-            child: Card(
-                elevation: 5.0,
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: _checkStatus(item['status']),
+        backgroundColor: AppColors.primaryColor,
+        iconTheme: IconThemeData(color: AppColors.themeDark),      ),
+      body: _orders == null ? Center(child: SpinKitCircle(color: AppColors.secondaryColor))
+          : _orders != null && _orderItems.length < 1 ?
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Text(
+                    'You have no ordered Items',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  TextButton(
+                    child: Text(
+                      'Shop for Items',
+                      style: TextStyle(color: Colors.white),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(5.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ScreenContainer(3)),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ) :
+            ListView.builder(
+              itemCount: _orderItems.length,
+              itemBuilder: (context, index) {
+                final item = _orderItems[index];
+                return Container(
+                  height: 180.0,
+                  child: Card(
+                      elevation: 5.0,
+                      child: Stack(
                         children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Container(
-                                    width: 120.0,
-                                    height: 160.0,
-                                    alignment: Alignment.center,
-                                    child: Image(
-                                      image: AssetImage(item['image']),
-                                      fit: BoxFit.fitHeight,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Text(
-                                        '${item['title']}',
-                                        style: TextStyle(
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.bold,
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: _checkStatus(item.status),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Container(
+                                          width: 120.0,
+                                          height: 160.0,
+                                          alignment: Alignment.center,
+                                          child: Image(
+                                            image: NetworkImage(fsDlEndpoint + item.product.images[0].link),
+                                            fit: BoxFit.fitHeight,
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        height: 7.0,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            'Price:',
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 15.0,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 10.0,
-                                          ),
-                                          Text(
-                                            '₹${item['price']}',
-                                            style: TextStyle(
-                                              color: Colors.blue,
-                                              fontSize: 15.0,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 7.0,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          RichText(
-                                            text: TextSpan(
-                                              text: 'Size:  ',
+                                      ],
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.all(10.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(
+                                              '${item.product.name}',
                                               style: TextStyle(
-                                                  fontSize: 15.0,
-                                                  color: Colors.grey),
-                                              children: <TextSpan>[
-                                                TextSpan(
-                                                    text: '  ${item['size']}',
-                                                    style: TextStyle(
-                                                        fontSize: 15.0,
-                                                        color: Colors.blue)),
+                                                fontSize: 15.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: 7.0,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                Text(
+                                                  'Price:',
+                                                  style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 15.0,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10.0,
+                                                ),
+                                                Text(
+                                                  '\$${numberFormat.format(item.price)}',
+                                                  style: TextStyle(
+                                                    color: Colors.blue,
+                                                    fontSize: 15.0,
+                                                  ),
+                                                ),
                                               ],
                                             ),
-                                          ),
-                                          SizedBox(
-                                            width: 10.0,
-                                          ),
-                                        ],
+                                            SizedBox(
+                                              height: 7.0,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                RichText(
+                                                  text: TextSpan(
+                                                    text: 'Quantity:  ',
+                                                    style: TextStyle(
+                                                        fontSize: 15.0,
+                                                        color: Colors.grey),
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                          text: '  ${item.quantity}',
+                                                          style: TextStyle(
+                                                              fontSize: 15.0,
+                                                              color: Colors.blue)),
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10.0,
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(
+                                              height: 7.0,
+                                            ),
+                                            if(item.status == 'pending')
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.themeRed,
+                                                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                    ),
+                                                    child: Text(
+                                                      'Cancel Order',
+                                                      style: TextStyle(color: Colors.white, fontSize: 14.0),
+                                                    ),
+                                                  )
+                                                ),
+                                                Spacer(),
+                                                InkWell(
+                                                    onTap: () {},
+                                                    child: Container(
+                                                      padding: EdgeInsets.all(8.0),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.green,
+                                                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                      ),
+                                                      child: Text(
+                                                        'Pay',
+                                                        style: TextStyle(color: Colors.white, fontSize: 14.0),
+                                                      ),
+                                                    )
+                                                ),
+                                              ],
+                                            ),
+                                            if(item.status == 'paid')
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                InkWell(
+                                                  onTap: () {},
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.themeRed,
+                                                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                    ),
+                                                    child: Text(
+                                                      'Open Dispute',
+                                                      style: TextStyle(color: Colors.white, fontSize: 14.0),
+                                                    ),
+                                                  )
+                                                ),
+                                                Spacer(),
+                                                InkWell(
+                                                    onTap: () {},
+                                                    child: Container(
+                                                      padding: EdgeInsets.all(8.0),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.green,
+                                                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                                      ),
+                                                      child: Text(
+                                                        'Mark as Delivered',
+                                                        style: TextStyle(color: Colors.white, fontSize: 14.0),
+                                                      ),
+                                                    )
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ],
-                                  ),
+                                    )
+                                  ],
                                 ),
-                              )
-                            ],
+                              ],
+                            ),
                           ),
                         ],
-                      ),
-                    ),
-                  ],
-                )),
-          );
-        },
-      ),
+                      )),
+                );
+              },
+            ),
     );
+  }
+
+  void setOrders(List<Orders> data) {
+    List<OrderItems> items = [];
+    for(Orders o in data) {
+      items.addAll(o.items);
+    }
+
+    setState(() {
+      _orderItems = items;
+    });
   }
 }

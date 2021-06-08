@@ -20,6 +20,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 
 class AddEditProductPage extends StatefulWidget {
@@ -32,6 +33,8 @@ class AddEditProductPage extends StatefulWidget {
 
 class _AddEditProductState extends State<AddEditProductPage> {
   FocusNode _nameFocus = FocusNode();
+  FocusNode _salePriceFocus = FocusNode();
+  FocusNode _saleEndFocus = FocusNode();
   FocusNode _descriptionFocus = FocusNode();
   FocusNode _stockFocus = FocusNode();
   FocusNode _stateFocus = FocusNode();
@@ -48,6 +51,7 @@ class _AddEditProductState extends State<AddEditProductPage> {
   List<Passport> _serverImages;
   bool _uploadingIcon = false;
   List<File> _selectedImages;
+  TextEditingController _saleEndController = new TextEditingController();
 
   @override
   void initState() {
@@ -353,6 +357,76 @@ class _AddEditProductState extends State<AddEditProductPage> {
 
                           ],
                         ),
+                        SizedBox(height: 15,),
+                        AutoSizeText('Leave Blank the below fields if Item is not on Sale!',
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.deepOrangeAccent
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[400],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: (width / 2) - 40,
+                                child: TextFormField(
+                                  textCapitalization: TextCapitalization.none,
+                                  focusNode: _salePriceFocus,
+                                  initialValue: _product.salePrice != null ? _product.salePrice.toString() : null,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    hintText: 'Sale Price',
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 12.0, bottom: 12.0),
+                                  ),
+                                  onSaved: (order) => _product.salePrice = double.parse(order),
+                                  onFieldSubmitted: (_) {
+                                    fieldFocusChange(
+                                        context, _salePriceFocus,
+                                        _saleEndFocus);
+                                  },
+                                ),
+                              ),
+                              Spacer(),
+                              Container(
+                                width: (width / 2) - 40,
+                                child: TextFormField(
+                                  controller: _saleEndController,
+                                  onTap: (){
+                                    // Below line stops keyboard from appearing
+                                    FocusScope.of(context).requestFocus(new FocusNode());
+
+                                    // Show Date Picker Here
+                                    _selectDate(context);
+                                  },
+                                  focusNode: _saleEndFocus,
+                                  textCapitalization: TextCapitalization.none,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
+                                    hintText: 'Sale End Date',
+                                    contentPadding: const EdgeInsets.only(
+                                        top: 12.0, bottom: 12.0),
+                                  ),
+                                  onSaved: (dob) => _product.saleEnds = dob,
+                                  onFieldSubmitted: (_) {
+                                    fieldFocusChange(
+                                        context, _saleEndFocus,
+                                        _descriptionFocus);
+                                  },
+                                ),
+                              ),
+
+                            ],
+                          ),
+                        ),
+
                         SizedBox(height: 25,),
                         HtmlEditor(
                           controller: htmlEditorController, //required
@@ -556,4 +630,18 @@ class _AddEditProductState extends State<AddEditProductPage> {
         }
       });
     }
+
+  Future _selectDate(BuildContext context) async {
+    DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: new DateTime(2010),
+      firstDate: new DateTime(1950),
+      lastDate: new DateTime.now(),
+    );
+
+    if(picked != null) setState(() => {
+      _product.saleEnds = picked.toString(),
+      _saleEndController.text = DateFormat('yyyy-MM-dd').format(picked)
+    });
+  }
 }

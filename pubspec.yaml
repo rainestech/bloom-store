@@ -38,6 +38,7 @@ dependencies:
   stripe_sdk: ^5.0.0-nullsafety.0
   flutter_secure_storage: ^4.2.0
   shared_preferences: ^2.0.6
+  share_plus: ^2.1.2
   firebase_core:
   firebase_auth:
   firebase_messaging: ^10.0.1

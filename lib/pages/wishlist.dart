@@ -1,8 +1,15 @@
+import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/data/entity/vendor.entity.dart';
+import 'package:bloom/data/http/endpoints.dart';
+import 'package:bloom/data/http/vendor.provider.dart';
+import 'package:bloom/data/repository/vendor.repository.dart';
+import 'package:bloom/pages/category/top_offers_pages/get_products.dart';
+import 'package:bloom/pages/container.dart';
+import 'package:bloom/pages/product/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import 'home.dart';
 
 class WishlistPage extends StatefulWidget {
   @override
@@ -10,44 +17,27 @@ class WishlistPage extends StatefulWidget {
 }
 
 class _WishlistPageState extends State<WishlistPage> {
-  int wishlistItem = 4;
+  final WishListRepository _repository = WishListRepository();
+  List<WishList> _list = [];
+  WishListsResponse _response;
 
-  final wishlistItemList = [
-    {
-      'title': 'Orange One Piece for Women',
-      'image': 'assets/products/wedding_collection/wedding_collection_11.jpg',
-      'price': 649,
-      'size': 'L'
-    },
-    {
-      'title': 'White One Piece for Women',
-      'image': 'assets/products/wedding_collection/wedding_collection_10.jpg',
-      'price': 299,
-      'size': 'M'
-    },
-    {
-      'title': 'Julee Crepe Embroidered Salwar Suit Material',
-      'image': 'assets/products/wedding_collection/wedding_collection_8.jpg',
-      'price': 849,
-      'size': 'L'
-    },
-    {
-      'title': 'Saara Poly Silk Embellished, Woven Salwar Suit Material',
-      'image': 'assets/products/wedding_collection/wedding_collection_2.jpg',
-      'price': 549,
-      'size': 'XS'
-    }
-  ];
+  @override
+  void initState() {
+    super.initState();
+    this.getList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Wishlist'),
+        title: Text('My Wishlist', style: TextStyle(color: AppColors.themeDark),),
+        backgroundColor: AppColors.primaryColor,
+        iconTheme: IconThemeData(color: AppColors.themeDark),
         titleSpacing: 0.0,
-        backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: (wishlistItem == 0)
+      body: (_response == null)? Center(child: SpinKitCircle(color: AppColors.secondaryColor,),)
+          : (_list.length == 0 && _response != null)
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -76,7 +66,7 @@ class _WishlistPageState extends State<WishlistPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Home()),
+                        MaterialPageRoute(builder: (context) => ScreenContainer(3)),
                       );
                     },
                   )
@@ -84,9 +74,9 @@ class _WishlistPageState extends State<WishlistPage> {
               ),
             )
           : ListView.builder(
-              itemCount: wishlistItemList.length,
+              itemCount: _list.length,
               itemBuilder: (context, index) {
-                final item = wishlistItemList[index];
+                final item = _list[index];
                 return Slidable(
                   actionPane: SlidableDrawerActionPane(),
                   actionExtentRatio: 0.25,
@@ -101,9 +91,9 @@ class _WishlistPageState extends State<WishlistPage> {
                         color: Colors.red,
                         icon: Icons.delete,
                         onTap: () {
+                          _repository.remove(item.product);
                           setState(() {
-                            wishlistItemList.removeAt(index);
-                            wishlistItem = wishlistItem - 1;
+                            _list.removeAt(index);
                           });
 
                           // Then show a snackbar.
@@ -126,14 +116,21 @@ class _WishlistPageState extends State<WishlistPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Container(
-                                  width: 120.0,
-                                  height: 160.0,
-                                  child: Image(
-                                    image: AssetImage(item['image']),
-                                    fit: BoxFit.fitHeight,
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) => ProductPage(product: item.product)));
+                                  },
+                                  child: Container(
+                                    width: 120.0,
+                                    height: 160.0,
+                                    child: Image(
+                                      image: AssetImage(fsDlEndpoint + item.product.images[0].link),
+                                      fit: BoxFit.fitHeight,
+                                    ),
                                   ),
                                 ),
+
                               ],
                             ),
                             Expanded(
@@ -144,7 +141,7 @@ class _WishlistPageState extends State<WishlistPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     Text(
-                                      '${item['title']}',
+                                      '${item.product.name}',
                                       style: TextStyle(
                                         fontSize: 15.0,
                                         fontWeight: FontWeight.bold,
@@ -170,7 +167,7 @@ class _WishlistPageState extends State<WishlistPage> {
                                           width: 10.0,
                                         ),
                                         Text(
-                                          '₹${item['price']}',
+                                          '\$${item.product.price}',
                                           style: TextStyle(
                                             color: Colors.blue,
                                             fontSize: 15.0,
@@ -187,15 +184,43 @@ class _WishlistPageState extends State<WishlistPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
+                                        Text(
+                                          'Category:',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 15.0,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 10.0,
+                                        ),
+                                        Text(
+                                          item.product.category.name,
+                                          style: TextStyle(
+                                            color: AppColors.secondaryColor,
+                                            fontSize: 15.0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 7.0,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
                                         RichText(
                                           text: TextSpan(
-                                            text: 'Size:  ',
+                                            text: 'Sold By:  ',
                                             style: TextStyle(
                                                 fontSize: 15.0,
                                                 color: Colors.grey),
                                             children: <TextSpan>[
                                               TextSpan(
-                                                  text: '  ${item['size']}',
+                                                  text: '  ${item.product.vendor.name}',
                                                   style: TextStyle(
                                                       fontSize: 15.0,
                                                       color: Colors.blue)),
@@ -217,8 +242,7 @@ class _WishlistPageState extends State<WishlistPage> {
                                           ),
                                           onTap: () {
                                             setState(() {
-                                              wishlistItemList.removeAt(index);
-                                              wishlistItem--;
+                                              _list.removeAt(index);
                                             });
 
                                             // Then show a snackbar.
@@ -241,5 +265,19 @@ class _WishlistPageState extends State<WishlistPage> {
               },
             ),
     );
+  }
+
+  void getList() async {
+    WishListsResponse response = await _repository.myList();
+    if (response.data != null) {
+      setState(() {
+        _list = response.data;
+        _response = response;
+      });
+    } else {
+      setState(() {
+        _response = response;
+      });
+    }
   }
 }

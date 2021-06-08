@@ -282,6 +282,18 @@ class VendorBloc {
     return response;
   }
 
+  Future<ProductListResponse> getDeals() async {
+    ProductListResponse response = await _productRepository.getDeals();
+    _productListSubject.sink.add(response);
+
+    return response;
+  }
+
+  Future<ProductListResponse> search(String query) async {
+    ProductListResponse response = await _productRepository.search(query);
+    return response;
+  }
+
   Future<AddressResponse> saveAddress(Address address) async {
     AddressResponse response = await _addressRepository.save(address);
     !_isDisposed ? _addressSubject.sink.add(response) : null;
