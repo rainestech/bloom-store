@@ -260,6 +260,7 @@ class OrderItems {
   String status;
   int quantity;
   double price;
+  String buyerName;
 
   OrderItems(
       {this.id,
@@ -275,6 +276,7 @@ class OrderItems {
     category = json['product_type'];
     name = json['name'];
     status = json['status'];
+    buyerName = json['buyer_name'];
     quantity = int.parse(json['quantity'].toString());
     orderId = int.parse(json['order_id'].toString());
     price = double.parse(json['price'].toString());

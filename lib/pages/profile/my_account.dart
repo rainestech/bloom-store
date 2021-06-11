@@ -5,6 +5,10 @@ import 'package:bloom/bloc/user.bloc.dart';
 import 'package:bloom/data/entity/admin.entity.dart';
 import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
+import 'package:bloom/pages/faq_and_about_app/about.dart';
+import 'package:bloom/pages/faq_and_about_app/about_app.dart';
+import 'package:bloom/pages/faq_and_about_app/faq.dart';
+import 'package:bloom/pages/faq_and_about_app/legal.dart';
 import 'package:bloom/pages/home_page_component/drawer.dart';
 import 'package:bloom/pages/order_payment/delivery_address.dart';
 import 'package:bloom/pages/order_payment/my_orders.dart';
@@ -359,7 +363,7 @@ class _MyAccountState extends State<MyAccount> with WidgetsBindingObserver {
           InkWell(
             onTap: () {
               _showToast();
-              // Navigator.push(context, SlideLeftRoute(page: FaqPage()));
+              Navigator.push(context, SlideLeftRoute(page: AboutUsPage()));
             },
             child: Container(
               padding: EdgeInsets.all(16.0),
@@ -391,8 +395,7 @@ class _MyAccountState extends State<MyAccount> with WidgetsBindingObserver {
 
           InkWell(
             onTap: () {
-              _showToast();
-              // Navigator.push(context, SlideLeftRoute(page: AboutApp()));
+              Navigator.push(context, SlideLeftRoute(page: LegalPage()));
             },
             child: Container(
               padding: EdgeInsets.all(16.0),

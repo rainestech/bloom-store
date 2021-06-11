@@ -1,12 +1,15 @@
 import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/bloc/person.bloc.dart';
 import 'package:bloom/bloc/user.bloc.dart';
 import 'package:bloom/bloc/vendor.bloc.dart';
 import 'package:bloom/data/entity/admin.entity.dart';
+import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/pages/admin/admin.container.dart';
 import 'package:bloom/pages/category/top_offers_pages/get_products.dart';
 import 'package:bloom/pages/container.dart';
+import 'package:bloom/pages/faq_and_about_app/contact.dart';
 import 'package:bloom/pages/messages/message.home.dart';
 import 'package:bloom/pages/profile/my_account.dart';
 import 'package:bloom/pages/vendors/vendors.container.dart';
@@ -23,6 +26,7 @@ class MainDrawer extends StatefulWidget {
 
 class _MainDrawerState extends State<MainDrawer> {
   User _user;
+  Person _person;
 
   List<Category> _categories = [];
 
@@ -40,6 +44,15 @@ class _MainDrawerState extends State<MainDrawer> {
           _user = value.data;
         });
       }
+    });
+
+    personBloc.me();
+    personBloc.personResponse.listen((value) {
+      if (!mounted) return;
+
+      setState(() {
+        _person = value.data;
+      });
     });
 
     userBloc.getUser();
@@ -218,6 +231,7 @@ class _MainDrawerState extends State<MainDrawer> {
                 );
               },
             ),
+            if (_person != null)
             InkWell(
               child: Container(
                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0),
@@ -273,6 +287,26 @@ class _MainDrawerState extends State<MainDrawer> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => MessageHome()),
+                );
+              },
+            ),
+
+            InkWell(
+              child: Container(
+                padding: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0),
+                child: Text(
+                  'Contact Us',
+                  style: TextStyle(
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w900,
+                    fontSize: 15.0,
+                  ),
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ContactPage()),
                 );
               },
             ),

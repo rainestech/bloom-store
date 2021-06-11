@@ -3,7 +3,6 @@ import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/data/http/vendor.provider.dart';
 import 'package:bloom/data/repository/vendor.repository.dart';
-import 'package:bloom/pages/category/top_offers_pages/get_products.dart';
 import 'package:bloom/pages/container.dart';
 import 'package:bloom/pages/product/product.dart';
 import 'package:flutter/material.dart';
@@ -241,6 +240,7 @@ class _WishlistPageState extends State<WishlistPage> {
                                             ),
                                           ),
                                           onTap: () {
+                                            _repository.remove(item.product);
                                             setState(() {
                                               _list.removeAt(index);
                                             });

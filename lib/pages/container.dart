@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/bloc/person.bloc.dart';
 import 'package:bloom/bloc/user.bloc.dart';
+import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/pages/category/top_offers_pages/deals.products.dart';
 import 'package:bloom/pages/messages/message.home.dart';
 import 'package:bloom/pages/profile/my_account.dart';
@@ -22,6 +24,7 @@ class ScreenContainer extends StatefulWidget {
 class _ScreenContainerState extends State<ScreenContainer> {
   int activeTabNumber = 3;
   DateTime currentBackPressTime;
+  Person _person;
 
   changeTab(int i) {
     setState(() {
@@ -35,7 +38,15 @@ class _ScreenContainerState extends State<ScreenContainer> {
     setState(() {
       activeTabNumber = widget.page;
     });
-    activeTabNumber = widget.page;
+
+    personBloc.me();
+    personBloc.personResponse.listen((value) {
+      if (!mounted) return;
+
+      setState(() {
+        _person = value.data;
+      });
+    });
   }
 
   @override
@@ -68,6 +79,7 @@ class _ScreenContainerState extends State<ScreenContainer> {
                   child: bottomBarItem(
                       1, activeTabNumber, FontAwesomeIcons.comments, 'Messages'),
                 ),
+                if(_person != null)
                 InkWell(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(

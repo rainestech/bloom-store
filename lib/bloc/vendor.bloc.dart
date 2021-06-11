@@ -128,6 +128,11 @@ class VendorBloc {
     return response;
   }
 
+  Future<Map<String, dynamic>> dashboard() async {
+    var response = await _categoryRepository.dashboard();
+    return response;
+  }
+
   Future<CategoryResponse> editCategory(Category cat) async {
     CategoryResponse response = await _categoryRepository.edit(cat);
     _categorySubject.sink.add(response);
@@ -223,6 +228,11 @@ class VendorBloc {
     ProductsResponse response = await _productRepository.delist(product);
     _productSubject.sink.add(response);
 
+    return response;
+  }
+
+  Future<Map<String, dynamic>> vendorDashboard() async {
+    var response = await _vendorRepository.dashboard();
     return response;
   }
 

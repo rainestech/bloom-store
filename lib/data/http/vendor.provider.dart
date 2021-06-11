@@ -312,6 +312,21 @@ class VendorApiProvider {
     }
   }
 
+  Future<Map<String, dynamic>> dashboard() async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.get(vendorEndpoint + '/dashboard');
+
+      return response.data;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return error;
+      }
+      return {"error": e.message, "dio": true};
+    }
+  }
+
   Future<VendorListResponse> getVendors() async {
     try {
       final Dio _dio = await HttpClient.http();
@@ -440,6 +455,21 @@ class CategoryApiProvider {
     }
   }
 
+  Future<Map<String, dynamic>> dashboard() async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.get(categoryEndpoint + '/dashboard');
+
+      return response.data;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return error;
+      }
+      return {"error": e.message, "dio": true};
+    }
+  }
+
   Future<CategoryResponse> editCategory(Category category) async {
     try {
       final Dio _dio = await HttpClient.http();
@@ -518,36 +548,6 @@ class WishListApiProvider {
       return false;
     }
   }
-
-  Future<CategoryResponse> editCategory(Category category) async {
-    try {
-      final Dio _dio = await HttpClient.http();
-      Response response = await _dio.put(categoryEndpoint, data: category.toJson());
-
-      return CategoryResponse.fromJson(response.data);
-    } catch (e) {
-      if (e.response != null) {
-        Map<String, dynamic> error = json.decode(e.response.toString());
-        return CategoryResponse.withError(error['message'], error['error']);
-      }
-      return CategoryResponse.withError(e.message, "Network Error");
-    }
-  }
-
-  Future<CategoryResponse> deleteCategory(Category category) async {
-    final Dio _dio = await HttpClient.http();
-    try {
-      await _dio.delete(categoryEndpoint + '/remove/${category.id}');
-
-      return CategoryResponse(category, "", "");
-    } catch (e) {
-      if (e.response != null) {
-        Map<String, dynamic> error = json.decode(e.response.toString());
-        return CategoryResponse.withError(error['message'], error['error']);
-      }
-      return CategoryResponse.withError(e.message, "Network Error");
-    }
-  }
 }
 
 class AdsApiProvider {
@@ -599,6 +599,21 @@ class AdsApiProvider {
         return AdsListResponse.withError(error['message'], error['error']);
       }
       return AdsListResponse.withError(e.message, "Network Error");
+    }
+  }
+
+  Future<Map<String, dynamic>> dashboard() async {
+    try {
+      final Dio _dio = await HttpClient.http();
+      Response response = await _dio.get(vendorEndpoint + '/dashboard');
+
+      return response.data;
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return error;
+      }
+      return {"error": e.message, "dio": true};
     }
   }
 

@@ -120,7 +120,7 @@ class _AdsScreenState extends State<AdsScreen> with WidgetsBindingObserver {
                   Container(
                     height: 20.0,
                     child: AutoSizeText(
-                      ad.product != null ? ad.product.name : ad.category.name,
+                      ad.product != null ? ad.product.name : ad.category != null ? ad.category.name : '',
                       maxLines: 1,
                       textAlign: TextAlign.center,
                     ),
@@ -253,6 +253,7 @@ class _AdsScreenState extends State<AdsScreen> with WidgetsBindingObserver {
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
+        print(ad.toJson().toString());
         return AlertDialog(
           title: Text(
             "Confirm Delete",

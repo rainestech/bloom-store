@@ -11,6 +11,12 @@ class CategoryRepository {
     return response;
   }
 
+  Future<Map<String, dynamic>> dashboard() async {
+    var response = await _apiProvider.dashboard();
+
+    return response;
+  }
+
   Future<CategoryResponse> save(Category category) async {
     CategoryResponse response = await _apiProvider.saveCategory(category);
 
@@ -189,6 +195,12 @@ class VendorRepository {
 
   Future<VendorListResponse> getVendors() async {
     VendorListResponse response = await _apiProvider.getVendors();
+
+    return response;
+  }
+
+  Future<Map<String, dynamic>> dashboard() async {
+    var response = await _apiProvider.dashboard();
 
     return response;
   }
