@@ -1,19 +1,19 @@
-import 'package:bloom/Animation/slide_left_rout.dart';
 import 'package:bloom/AppTheme/theme.dart';
+import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/stripe.payment.dart';
 import 'package:bloom/helpers/helper.dart';
+import 'package:bloom/pages/container.dart';
+import 'package:bloom/pages/vendors/vendors.container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:stripe_sdk/stripe_sdk.dart';
 import 'package:stripe_sdk/stripe_sdk_ui.dart';
 
-import '../home.dart';
-
-
 class PaymentPage extends StatefulWidget {
   final PaymentResponse paymentResponse;
+  final Vendor vendor;
 
-  const PaymentPage({Key key, this.paymentResponse}) : super(key: key);
+  const PaymentPage({Key key, this.paymentResponse, this.vendor}) : super(key: key);
   @override
   _PaymentPageState createState() => _PaymentPageState();
 }
@@ -36,7 +36,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Payment'),
+        title: Text(widget.vendor == null ? 'Payment' : 'Payment Confirmation'),
         backgroundColor: AppColors.primaryColor,
         titleSpacing: 0.0,
       ),
@@ -199,10 +199,14 @@ class _PaymentPageState extends State<PaymentPage> {
 
     if (paymentIntentRes['status'] == 'succeeded') {
       await logPayment(paymentIntentRes);
-      showAlertDialog(
+      widget.vendor == null ? showAlertDialog(
           context,
           "Payment Success",
           "Thanks for Shopping with us, your order will be on its way to you soon!",
+          true) : showAlertDialog(
+          context,
+          "Payment Success",
+          "Your Subscription has been received and activated!",
           true);
       return;
     }
@@ -260,13 +264,22 @@ class _PaymentPageState extends State<PaymentPage> {
                 child: Text("OK"),
                 onPressed: () => {
                   Navigator.of(context).pop(),
-                  if (success) {
+                  if (success && widget.vendor == null) {
                     Navigator.of(context).pop(),
                     Navigator.of(context).pop(),
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Home(),
+                        builder: (context) => ScreenContainer(3),
+                      ),
+                    )
+                  } else if (success && widget.vendor != null) {
+                    Navigator.of(context).pop(),
+                    Navigator.of(context).pop(),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => VendorContainer(1),
                       ),
                     )
                   }
@@ -283,6 +296,7 @@ class _PaymentPageState extends State<PaymentPage> {
     log.status = 'paid';
     log.amountPaid = double.parse(paymentIntentRes['amount'].toString());
     log.paymentMethodId = 1;
+    log.type = widget.vendor == null ? 'shopping' : 'subs';
     _provider.savePayment(widget.paymentResponse);
   }
 }

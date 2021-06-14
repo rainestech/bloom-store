@@ -459,7 +459,7 @@ class _ProductScreenState extends State<ProductScreen> {
     EasyLoading.dismiss();
 
     if (resp.data != null) {
-      EasyLoading.showSuccess('Product Delisted', duration: Duration(seconds: 5));
+      EasyLoading.showSuccess('Product Approved', duration: Duration(seconds: 5));
     } else {
       EasyLoading.showError('An Error Occurred, Please try again', duration: Duration(seconds: 5));
     }

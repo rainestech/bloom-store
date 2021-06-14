@@ -27,6 +27,7 @@ class PaymentResponse {
   double amount;
   double amountPaid;
   String status;
+  String type;
   int paymentMethodId;
   int orderId;
   String error;
@@ -37,6 +38,7 @@ class PaymentResponse {
     email = json['email'];
     response = json['response'];
     status = json['status'];
+    type = json['type'];
     amount = double.parse(json['amount'].toString());
     amountPaid = double.parse(json['amount_paid'].toString());
     orderId = int.parse(json['order_id'].toString());
@@ -53,6 +55,7 @@ class PaymentResponse {
     json['order_id'] = orderId;
     json['error'] = error;
     json['status'] = status;
+    json['type'] = type;
     json['response'] = response;
 
     return json;

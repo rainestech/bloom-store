@@ -1,3 +1,4 @@
+import 'package:bloom/Animation/slide_left_rout.dart';
 import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/bloc/person.bloc.dart';
 import 'package:bloom/bloc/vendor.bloc.dart';
@@ -5,7 +6,9 @@ import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/data/http/persons.provider.dart';
+import 'package:bloom/data/http/stripe.payment.dart';
 import 'package:bloom/data/http/vendor.provider.dart';
+import 'package:bloom/pages/order_payment/payment.dart';
 import 'package:bloom/pages/vendors/vendors.container.dart';
 import 'package:flutter/material.dart';
 import 'package:bloom/helpers/form.validators.dart';
@@ -21,8 +24,9 @@ import 'package:mime/mime.dart';
 class EditVendorPage extends StatefulWidget {
   final Vendor vendor;
   final Person person;
+  final double plans;
 
-  const EditVendorPage({Key key, @required this.vendor, this.person}) : super(key: key);
+  const EditVendorPage({Key key, @required this.vendor, @required this.person, @required this.plans}) : super(key: key);
   @override
   _EditVendorPageState createState() => _EditVendorPageState();
 }
@@ -503,16 +507,28 @@ class _EditVendorPageState extends State<EditVendorPage> {
             context, _response.error, _response.eTitle); //invoking log
       } else {
         EasyLoading.dismiss();
-        if (_vendor.id == null) {
+        if (_vendor.id == null && widget.plans == 0) {
           EasyLoading.showSuccess('Vendor Application Received. This will be reviewed by Admin for approval in due course.', maskType: EasyLoadingMaskType.black, duration: Duration(seconds: 5));
+          Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      VendorContainer(4)));
+        } else if (_vendor.id == null && widget.plans != 0) {
+          var pr = new PaymentResponse();
+          pr.orderId = _response.data.id;
+          pr.email = _response.data.person[0].user.email;
+          pr.amount = widget.plans;
+          pr.paymentMethodId = 1;
+
+          EasyLoading.dismiss();
+          Navigator.push(context, SlideLeftRoute(page: PaymentPage(paymentResponse: pr, vendor: _response.data)));
         } else {
           EasyLoading.showSuccess('Vendor Information updated successfully', maskType: EasyLoadingMaskType.black, duration: Duration(seconds: 5));
+          Navigator.push(context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      VendorContainer(4)));
         }
-
-        Navigator.push(context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    VendorContainer(4)));
       }
     } catch (error) {
       EasyLoading.dismiss();

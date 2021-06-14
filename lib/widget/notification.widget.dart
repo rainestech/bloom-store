@@ -16,19 +16,6 @@ class _NotificationWidgetState extends State<NotificationWidget> {
   @override
   void initState() {
     super.initState();
-    vendorBloc.cartListSubject.listen((value) {
-      if (!mounted) {
-        return;
-      }
-
-      setState(() {
-        if (value.data != null) {
-          _cart = value.data;
-        }
-      });
-    });
-
-    vendorBloc.myCart();
   }
 
   @override
@@ -44,11 +31,11 @@ class _NotificationWidgetState extends State<NotificationWidget> {
         badgeColor: AppColors.themeRed,
         child: Icon(
           Icons.notifications,
-          color: AppColors.themeDark,
+          color: Colors.transparent, // made invincible
         ),
       ) : Icon(
         Icons.notifications,
-        color: AppColors.themeDark,
+        color: Colors.transparent, // made invincible,
       ),
       onPressed: () {
         // Navigator.push(context, SlideLeftRoute(page: CartPage()));

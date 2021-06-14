@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/bloc/user.bloc.dart';
 import 'package:bloom/pages/vendors/profile/edit.vendor.dart';
+import 'package:bloom/pages/vendors/profile/plans.vendor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -293,6 +294,72 @@ class _VendorIntroState extends State<VendorIntro> {
               ],
             ),
           ),
+          Container(
+            margin: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(20.0),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  blurRadius: 2.5,
+                  spreadRadius: 1.5,
+                  color: Colors.grey[300],
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: width - 140.0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 8.0, bottom: 4.0, right: 8.0, left: 8.0),
+                        child: AutoSizeText(
+                          '4. You Ship',
+                          maxLines: 1,
+                          style: TextStyle(
+                            color: AppColors.themeDark,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.7,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 8.0, bottom: 4.0, right: 8.0, left: 8.0),
+                        child: AutoSizeText(
+                          'As a seller on Bloom, you can ship your orders to your customers, once shipment is confirmed, payment will be credited on your virtual wallet',
+                          textAlign: TextAlign.justify,
+                          style: TextStyle(
+                            color: AppColors.themeDark,
+                            fontSize: 14.0,
+                            letterSpacing: 0.7,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 100.0,
+                  height: 100.0,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/image_v4.png'),
+                      fit: BoxFit.cover,
+                    ),
+                    borderRadius: BorderRadius.circular(35.0),
+                  ),
+                ),
+              ],
+            ),
+          ),
 
           InkWell(
             onTap: () {
@@ -300,7 +367,7 @@ class _VendorIntroState extends State<VendorIntro> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          EditVendorPage(vendor: null))).then((value) => {
+                          VendorPlans())).then((value) => {
               userBloc.updateUser()
               });
             },
@@ -314,7 +381,7 @@ class _VendorIntroState extends State<VendorIntro> {
                   borderRadius:
                   BorderRadius.circular(5.0)),
               child: Text(
-                'Get Started',
+                'Sign Up for Free Trial',
                 style: TextStyle(
                   fontFamily: 'Signika Negative',
                   fontSize: 18.0,

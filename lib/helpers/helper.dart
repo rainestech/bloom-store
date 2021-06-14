@@ -49,6 +49,9 @@ class DateFormatter {
   }
 
   static bool dateAheadOfNow(String date) {
+    if (date == null) {
+      return false;
+    }
     var dt = new DateFormat("yyyy-MM-dd hh:mm:ss").parse(date).toLocal();
     var now = DateTime.now().toLocal();
     return now.difference(dt).inDays < 1;

@@ -461,9 +461,9 @@ class Products {
     approved = json['approved'];
     sku = json['sku'];
     quantity = json['quantity'];
-    price = double.parse(json['price'].toString());
-    lsFee = double.parse(json['lsFee'].toString());
-    isFee = double.parse(json['isFee'].toString());
+    price = json['price'] != null ? double.parse(json['price'].toString()) : null;
+    lsFee = json['lsFee'] != null ? double.parse(json['lsFee'].toString()) : null;
+    isFee = json['isFee'] != null ? double.parse(json['isFee'].toString()): null;
     category = json['category'] != null ? new Category.fromJson(json['category']) : null;
   }
 

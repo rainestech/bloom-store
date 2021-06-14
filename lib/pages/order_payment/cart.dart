@@ -400,7 +400,7 @@ class _CartPageState extends State<CartPage> {
 
   String _getTotal() {
     if (_cart.length > 0) {
-      return numberFormat.format(_cart.fold(0.0, (sum, item) => sum + (item.price * item.quantity)).toString());
+      return numberFormat.format(_cart.fold(0.0, (sum, item) => sum + (item.price * item.quantity)));
     }
 
     return '0';

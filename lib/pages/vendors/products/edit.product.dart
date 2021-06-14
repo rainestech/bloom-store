@@ -341,9 +341,10 @@ class _AddEditProductState extends State<AddEditProductPage> {
                                   contentPadding: const EdgeInsets.only(
                                       top: 12.0, bottom: 12.0),
                                 ),
-                                validator: (value) {
+                                validator: (price) {
+                                  print(price); //yyyyyyyyyyy
                                   return Validator.between(
-                                      double.parse(value == null ? 0 : value), 0.01, 100000,
+                                      double.parse(price == null ? 0 : price), 0.01, 100000,
                                       'Product Price Invalid');
                                 },
                                 onSaved: (price) => _product.price = double.parse(price),
@@ -386,7 +387,9 @@ class _AddEditProductState extends State<AddEditProductPage> {
                                     contentPadding: const EdgeInsets.only(
                                         top: 12.0, bottom: 12.0),
                                   ),
-                                  onSaved: (order) => _product.salePrice = double.parse(order),
+                                  onSaved: (sp) {
+                                    print("SP: " + sp);
+                                    _product.salePrice = (sp != null && sp.isNotEmpty) ? double.parse(sp) : 0;                                  },
                                   onFieldSubmitted: (_) {
                                     fieldFocusChange(
                                         context, _salePriceFocus,

@@ -872,6 +872,7 @@ class ProductsApiProvider {
 
       return ProductsResponse.fromJson(response.data);
     } catch (e) {
+      print(e.toString());
       if (e.response != null) {
         Map<String, dynamic> error = json.decode(e.response.toString());
         return ProductsResponse.withError(error['message'], error['error']);
@@ -1057,19 +1058,19 @@ class OrderApiProvider {
   }
 
   Future<OrderResponse> saveOrder(Orders order) async {
-    // try {
+    try {
       final Dio _dio = await HttpClient.http();
       Response response = await _dio.post(orderEndpoint,
           data: order.toJson());
 
       return OrderResponse.fromJson(response.data);
-    // } catch (e) {
-    //   if (e.response != null) {
-    //     Map<String, dynamic> error = json.decode(e.response.toString());
-    //     return OrderResponse.withError(error['message'], error['error']);
-    //   }
-    //   return OrderResponse.withError(e.message, "Network Error");
-    // }
+    } catch (e) {
+      if (e.response != null) {
+        Map<String, dynamic> error = json.decode(e.response.toString());
+        return OrderResponse.withError(error['message'], error['error']);
+      }
+      return OrderResponse.withError(e.message, "Network Error");
+    }
   }
 
 
