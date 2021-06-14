@@ -50,21 +50,29 @@ class MessagesBloc {
     bool isAdmin = user.isAdmin;
     List<String> adminContact = ['admin@bloomstore.com', user.email];
     adminContact.sort((a, b) => a.toString().compareTo(b.toString()));
-    List<Map<String, dynamic>> contacts = isAdmin ? [] : [{'from': {'name': 'Bloom Admin', 'email': 'admin@bloomstore.com'}, 'sender': user.email, 'to': adminContact, 'date': null}];
+    List<Map<String, dynamic>> contacts = []; // : [{'from': {'name': 'Bloom Admin', 'email': 'admin@bloomstore.com'}, 'sender': user.email, 'to': adminContact, 'date': null}];
 
     if (email != null && !isAdmin) {
       chatStream = _chats.where('to', arrayContains: email).orderBy('date', descending: true).snapshots().listen((event) {
         event.docs.forEach((e) {
-          try {
-            if (contacts.isEmpty) {
-              contacts.add(e.data());
-            } else if (contacts.where((c) => c['sender'] == e['sender']).isEmpty) {
-              contacts.add(e.data());
+          if (e['from']['email'] != email) {
+            try {
+              if (contacts.isEmpty) {
+                contacts.add(e.data());
+              } else if (contacts.firstWhere((c) => c['from']['email'] == e['from']['email'], orElse: notFound) == null) {
+                contacts.add(e.data());
+              }
+            } on Exception catch (e) {
+              print(e.toString());
             }
-          } on Exception catch (e) {
-            print(e.toString());
           }
         });
+
+        // if(contacts.isEmpty) {
+        //   contacts.add({'from': {'name': 'Bloom Admin', 'email': 'admin@bloomstore.com'}, 'sender': user.email, 'to': adminContact, 'date': null});
+        // } else if (contacts.where((c) => c['from']['name'] == 'Bloom Admin').isEmpty) {
+        //   contacts.add({'from': {'name': 'Bloom Admin', 'email': 'admin@bloomstore.com'}, 'sender': user.email, 'to': adminContact, 'date': null});
+        // }
         _contactSubject.sink.add(contacts);
       });
     }

@@ -142,12 +142,12 @@ class _CartPageState extends State<CartPage> {
               ),
               InkWell(
                 onTap: () {
+                  print(_me.name);
                   if (_cart.length == 0)
                        _showDialog();
-                   else if (_me == null && _resp) {
+                   else if (_me.id == null && _resp) {
                     Fluttertoast.showToast(msg: "Update your profile first", backgroundColor: Colors.black, textColor: Colors.white);
-                    Navigator.push(
-                      context, SlideLeftRoute(page: EditProfile()));
+                    _showProfileDialog();
                   } else {
                     Navigator.push(
                         context, SlideLeftRoute(page: CheckoutPage(cart: _cart, person: _me)));
@@ -413,4 +413,49 @@ class _CartPageState extends State<CartPage> {
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Item Removed")));
   }
+
+  void _showProfileDialog() async {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            title: Text(
+              "Profile Not Completed!",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            // content: Text("Are you Sure you want to Logout?"),
+            actions: <Widget>[
+              // usually buttons at the bottom of the dialog
+              TextButton(
+                child: Text(
+                  "Complete Profile",
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => EditProfile()));
+                },
+              ),
+
+              TextButton(
+                child: Text(
+                  "Continue Shopping",
+                  style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
 }

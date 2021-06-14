@@ -12,8 +12,15 @@ class CategoryGrid extends StatefulWidget {
   _CategoryGridState createState() => _CategoryGridState();
 }
 
-class _CategoryGridState extends State<CategoryGrid> {
+class _CategoryGridState extends State<CategoryGrid> with WidgetsBindingObserver {
   List<Category> _categories = [];
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      vendorBloc.getCategories();
+    }
+  }
 
   @override
   void initState() {
@@ -35,13 +42,19 @@ class _CategoryGridState extends State<CategoryGrid> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    if (_categories.length < 1) {
+      vendorBloc.getCategories();
+    }
 
     InkWell getStructuredGridCell(Category category) {
       final item = category;
       return InkWell(
-        child: Image(
-          image: NetworkImage(fsDlEndpoint + item.icon.link),
-          fit: BoxFit.fitHeight,
+        child: Container(
+          padding: EdgeInsets.all(10),
+          child: Image(
+            image: NetworkImage(fsDlEndpoint + item.icon.link),
+            fit: BoxFit.fitHeight,
+          ),
         ),
         onTap: () {
           Navigator.push(

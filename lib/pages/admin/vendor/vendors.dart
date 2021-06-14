@@ -23,7 +23,6 @@ class _AdminVendorScreenState extends State<AdminVendorScreen> {
   @override
   void initState() {
     super.initState();
-    vendorBloc.getVendors();
   }
 
   @override
@@ -321,8 +320,8 @@ class _AdminVendorScreenState extends State<AdminVendorScreen> {
             // ),
           ],
         ),
-        body: StreamBuilder<VendorListResponse>(
-            stream: vendorBloc.vendorListSubject.stream,
+        body: FutureBuilder<VendorListResponse>(
+            future: vendorBloc.getVendors(),
             builder: (context, AsyncSnapshot<VendorListResponse> snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.error != null &&

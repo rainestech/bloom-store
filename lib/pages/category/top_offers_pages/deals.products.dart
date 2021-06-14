@@ -27,11 +27,18 @@ class DealsProducts extends StatefulWidget {
   _DealsProductsState createState() => _DealsProductsState();
 }
 
-class _DealsProductsState extends State<DealsProducts> {
+class _DealsProductsState extends State<DealsProducts> with WidgetsBindingObserver {
   ProductListResponse _response;
   List<Products> _data = [];
   int filterValue = 1;
   DateTime currentBackPressTime;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      vendorBloc.getAds();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

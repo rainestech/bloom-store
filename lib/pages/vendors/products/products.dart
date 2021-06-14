@@ -30,11 +30,11 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.vendor != null) {
-      vendorBloc.getShopProductsAdmin(widget.vendor);
-    } else {
-      vendorBloc.getMyProducts();
-    }
+    // if (widget.vendor != null) {
+    //   vendorBloc.getShopProductsAdmin(widget.vendor);
+    // } else {
+    //   vendorBloc.getMyProducts();
+    // }
 
     userBloc.getUser();
     userBloc.userSubject.listen((value) {
@@ -347,8 +347,8 @@ class _ProductScreenState extends State<ProductScreen> {
             ),
           ],
         ),
-        body: StreamBuilder<ProductListResponse>(
-            stream: vendorBloc.productListSubject.stream,
+        body: FutureBuilder<ProductListResponse>(
+            future: widget.vendor != null ? vendorBloc.getShopProductsAdmin(widget.vendor) : vendorBloc.getMyProducts(),
             builder: (context, AsyncSnapshot<ProductListResponse> snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.error != null &&

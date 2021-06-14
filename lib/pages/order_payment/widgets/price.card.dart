@@ -59,7 +59,7 @@ class PriceDetailsCard extends StatelessWidget {
     if (cart.length > 0 && type == 'sub') {
       return cart.fold(0.0, (sum, item) => sum + item.price).toString();
     } else if (cart.length > 0 && type != 'sub') {
-      return (cart.fold(0.0, (sum, item) => sum + item.price) * 0.05).toString();
+      return (cart.fold(0.0, (sum, item) => sum + item.price) * 0.00).toString();
     }
 
     return '0';

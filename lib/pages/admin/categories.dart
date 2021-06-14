@@ -22,7 +22,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     super.initState();
-    vendorBloc.getCategories();
   }
 
   @override
@@ -250,8 +249,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
             ),
           ],
         ),
-        body: StreamBuilder<CategoryListResponse>(
-            stream: vendorBloc.categoryListSubject.stream,
+        body: FutureBuilder<CategoryListResponse>(
+            future: vendorBloc.getCategories(),
             builder: (context, AsyncSnapshot<CategoryListResponse> snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.error != null &&

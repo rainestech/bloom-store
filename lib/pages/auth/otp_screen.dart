@@ -513,10 +513,11 @@ class _OtpScreenState extends State<OtpScreen> {
                 context, _response.error, ""); //invoking log
           } else {
             EasyLoading.dismiss();
+            EasyLoading.showInfo("Please complete your profile");
 
             Navigator.push(context, PageTransition(
                 type: PageTransitionType.rightToLeft,
-                child: ScreenContainer(3)));
+                child: ScreenContainer(5)));
           }
         } else {
           EasyLoading.dismiss();

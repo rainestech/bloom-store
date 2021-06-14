@@ -4,6 +4,7 @@ import 'package:bloom/data/entity/vendor.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/data/http/vendor.provider.dart';
 import 'package:bloom/helpers/helper.dart';
+import 'package:bloom/pages/container.dart';
 import 'package:bloom/pages/product/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -83,7 +84,7 @@ class _GetProductsState extends State<GetProducts> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Home()),
+                          MaterialPageRoute(builder: (context) => ScreenContainer(3)),
                         );
                       },
                     )

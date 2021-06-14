@@ -46,6 +46,9 @@ class _TopSellerState extends State<TopSeller> with WidgetsBindingObserver {
     double width = MediaQuery.of(context).size.width;
 
     InkWell getStructuredGridCell(Products products) {
+      if (_products.length < 1) {
+        vendorBloc.getProducts();
+      }
       return InkWell(
         child: Container(
           margin: EdgeInsets.all(5.0),

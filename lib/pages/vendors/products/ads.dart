@@ -221,8 +221,8 @@ class _AdsScreenState extends State<AdsScreen> with WidgetsBindingObserver {
             ),
           ],
         ),
-        body: StreamBuilder<AdsListResponse>(
-            stream: vendorBloc.adsListSubject.stream,
+        body: FutureBuilder<AdsListResponse>(
+            future: vendorBloc.getAds(),
             builder: (context, AsyncSnapshot<AdsListResponse> snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data.error != null &&

@@ -1,4 +1,3 @@
-import 'package:bloom/Animation/slide_left_rout.dart';
 import 'package:bloom/AppTheme/theme.dart';
 import 'package:bloom/bloc/vendor.bloc.dart';
 import 'package:bloom/data/entity/personnel.entity.dart';

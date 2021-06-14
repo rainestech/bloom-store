@@ -145,8 +145,6 @@ class _MessageHomeState extends State<MessageHome>  with WidgetsBindingObserver 
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
-    print(contact.toString());
-
     return InkWell(
         onTap: () {
           List<String> to = [];

@@ -114,8 +114,8 @@ class _EditProfileState extends State<EditProfile> {
 
       setState(() {
         _personResponse = value;
-
-        if (value.data == null) {
+        // print(value.data.name.toString());
+        if (value.data.id == null) {
           _person = new Person();
         }  else {
           _person = value.data;

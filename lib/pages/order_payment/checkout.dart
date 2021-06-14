@@ -8,9 +8,11 @@ import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/data/http/stripe.payment.dart';
 import 'package:bloom/data/http/vendor.provider.dart';
 import 'package:bloom/helpers/helper.dart';
+import 'package:bloom/pages/container.dart';
 import 'package:bloom/pages/order_payment/payment.dart';
 import 'package:bloom/pages/order_payment/widgets/address.card.dart';
 import 'package:bloom/pages/order_payment/widgets/price.card.dart';
+import 'package:bloom/pages/profile/edit_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -306,6 +308,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
     var address = (widget.person.addresses != null && widget.person.addresses.length > 0) ? widget.person.addresses.firstWhere((e) => e.type == 'shipping') : null;
 
     if (_cart.isEmpty) {
+      return;
+    }
+
+    if (widget.person == null) {
+      Fluttertoast.showToast(msg: 'Please complete your profile first!');
       return;
     }
 

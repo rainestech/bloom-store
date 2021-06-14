@@ -185,7 +185,7 @@ class Cart {
   String status;
   int quantity;
   double price;
-  double shipping;
+  double shipping = 0;
 
   Cart(
       {this.id,
@@ -200,7 +200,7 @@ class Cart {
     category = json['product_type'];
     status = json['status'];
     quantity = json['quantity'];
-    shipping = double.parse(json['shipping'].toString());
+    shipping = json['shipping'] != null ? double.parse(json['shipping'].toString()) : 0;
     price = double.parse(json['price'].toString());
     product = json['product'] != null ? new Products.fromJson(json['product']) : null;
   }
@@ -211,7 +211,7 @@ class Cart {
     data['product_type'] = this.category;
     data['status'] = this.status;
     data['price'] = this.price;
-    data['shipping'] = this.price;
+    data['shipping'] = this.shipping == null ? 0 : this.shipping;
     data['quantity'] = this.quantity;
     data['product'] = this.product != null ? product.toJson() : null;
     return data;

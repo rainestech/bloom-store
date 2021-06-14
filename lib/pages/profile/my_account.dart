@@ -6,8 +6,7 @@ import 'package:bloom/data/entity/admin.entity.dart';
 import 'package:bloom/data/entity/personnel.entity.dart';
 import 'package:bloom/data/http/endpoints.dart';
 import 'package:bloom/pages/faq_and_about_app/about.dart';
-import 'package:bloom/pages/faq_and_about_app/about_app.dart';
-import 'package:bloom/pages/faq_and_about_app/faq.dart';
+import 'package:bloom/pages/faq_and_about_app/contact.dart';
 import 'package:bloom/pages/faq_and_about_app/legal.dart';
 import 'package:bloom/pages/home_page_component/drawer.dart';
 import 'package:bloom/pages/order_payment/delivery_address.dart';
@@ -427,9 +426,8 @@ class _MyAccountState extends State<MyAccount> with WidgetsBindingObserver {
 
           InkWell(
             onTap: () {
-              _showToast();
-              // Navigator.push(context,
-              //     MaterialPageRoute(builder: (context) => Login('profile')));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ContactPage()));
             },
             child: Container(
               padding: EdgeInsets.all(16.0),

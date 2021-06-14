@@ -78,6 +78,7 @@ class _ProductCartPageState extends State<ProductCartPage> {
               ),
               InkWell(
                 onTap: () {
+                  _checkOut();
                   // Navigator.push(context, SlideLeftRoute(page: Delivery()));
                 },
                 child: Container(
@@ -362,6 +363,33 @@ class _ProductCartPageState extends State<ProductCartPage> {
     if (response.data != null) {
       EasyLoading.dismiss();
       _showDialog();
+    } else {
+      EasyLoading.dismiss();
+      ServerValidationDialog.errorDialog(
+          context, response.error, response.eTitle); //invoking log
+      print(response.error);
+    }
+  }
+  void _checkOut() async {
+    if (quantity < 1) {
+      Fluttertoast.showToast(msg: 'Quantity can not be 0 or less than 1');
+      return;
+    }
+    EasyLoading.show(status: 'Adding Product to Cart...', dismissOnTap: false, maskType: EasyLoadingMaskType.black);
+    var product = widget.product;
+    product.quantity = quantity;
+    var data = new Cart();
+    data.product = product;
+    data.quantity = quantity;
+    data.price = (widget.product.salePrice != null && DateFormatter.dateAheadOfNow(widget.product.saleEnds)) ? product.salePrice : product.price;
+    data.category = product.category.name;
+    data.status = 'cart';
+
+    CartResponse response = await vendorBloc.saveCart(data);
+    if (response.data != null) {
+      EasyLoading.dismiss();
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => CartPage()));
     } else {
       EasyLoading.dismiss();
       ServerValidationDialog.errorDialog(
